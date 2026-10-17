@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>RWANDA JUSTICE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.28.4/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --ink: #12252b; --ink-soft: #4a5c61; --ink-faint: #7c8c90;
+    --teal-900: #0a3a3f; --teal-800: #0b4f55; --teal-700: #0e6169;
+    --teal-100: #e4efee; --teal-050: #f4f9f8;
+    --parchment: #faf8f4; --paper: #ffffff; --line: #e1e6e5;
+    --amber-100: #f7ead9; --error: #b23b3b;
+    --font-display: "Fraunces", Georgia, serif;
+    --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+    --radius-sm: 8px; --radius-md: 14px; --radius-lg: 22px;
+    --shadow-card: 0 20px 50px rgba(10,40,44,0.08);
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  :root[data-theme="dark"] {
+    --ink: #eef3f2; --ink-soft: #b9c8c7; --ink-faint: #8ba0a0;
+    --parchment: #0d1a1c; --paper: #12262a; --line: #223a3d;
+    --teal-050: #123033; --teal-100: #17393c;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #eef3f2; --ink-soft: #b9c8c7; --ink-faint: #8ba0a0;
+      --parchment: #0d1a1c; --paper: #12262a; --line: #223a3d;
+      --teal-050: #123033; --teal-100: #17393c;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body { margin: 0; font-family: var(--font-body); color: var(--ink); background: var(--parchment); -webkit-font-smoothing: antialiased; }
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+  p { margin: 0; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  a { color: inherit; text-decoration: none; }
+  :focus-visible { outline: 2px solid var(--teal-700); outline-offset: 2px; }
+  img { max-width: 100%; }
+  .app-wrap { overflow-x: hidden; }
+
+  /* Navbar */
+  .navbar { height: 76px; padding: 0 7%; display: flex; align-items: center; justify-content: space-between; background: var(--paper); border-bottom: 1px solid var(--line); position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-logo { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; background: var(--teal-800); color: white; font-size: 22px; flex-shrink: 0; }
+  .brand strong { display: block; letter-spacing: 0.02em; }
+  .brand small { display: block; color: var(--ink-faint); font-size: 10px; margin-top: 2px; }
+  .navbar nav { display: flex; align-items: center; gap: 20px; }
+  .navbar nav a { color: var(--ink-soft); font-size: 14px; }
+  .navbar nav a:hover { color: var(--teal-700); }
+  .navbar select { padding: 9px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); }
+  .ask-button, .login-button { border: 0; border-radius: 9px; padding: 10px 14px; display: flex; align-items: center; gap: 7px; }
+  .ask-button { background: var(--teal-100); color: var(--teal-800); font-weight: 600; }
+  .login-button { background: var(--teal-800); color: white; font-weight: 700; }
+  @media (max-width: 900px) { .navbar nav a { display: none; } }
+  @media (max-width: 600px) { .navbar { padding: 0 5%; } .navbar nav select, .ask-button { display: none; } }
+
+  /* Hero */
+  .hero { padding: 90px 8%; display: grid; grid-template-columns: 1.2fr .8fr; gap: 70px; align-items: center; background: linear-gradient(135deg, var(--teal-050) 0%, var(--parchment) 75%); }
+  .badge { display: inline-block; padding: 9px 14px; border-radius: 30px; background: var(--teal-100); color: var(--teal-800); font-size: 13px; font-weight: 700; }
+  .hero h1 { font-size: clamp(38px, 5.6vw, 66px); line-height: 1.04; margin: 22px 0; }
+  .hero h1 span { color: var(--teal-700); }
+  .hero-content > p { max-width: 640px; font-size: 18px; line-height: 1.7; color: var(--ink-soft); }
+  .hero-actions { display: flex; gap: 12px; margin: 30px 0; flex-wrap: wrap; }
+  .primary-button, .secondary-button { border: 0; border-radius: 10px; padding: 14px 18px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; }
+  .primary-button { background: var(--teal-800); color: white; }
+  .primary-button:hover { background: var(--teal-900); }
+  .secondary-button { background: var(--teal-100); color: var(--teal-800); }
+  .full { width: 100%; }
+  .trust-row { display: flex; gap: 22px; color: var(--ink-faint); font-size: 12px; flex-wrap: wrap; }
+  .trust-row span { display: flex; gap: 6px; align-items: center; }
+  .tracker-card { padding: 30px; border-radius: var(--radius-lg); background: var(--paper); border: 1px solid var(--line); box-shadow: var(--shadow-card); }
+  .tracker-header { display: flex; justify-content: space-between; color: var(--ink-faint); font-size: 12px; font-weight: 700; letter-spacing: 0.06em; }
+  .tracker-card h2 { margin: 25px 0 8px; font-size: 26px; }
+  .tracker-card p { color: var(--ink-soft); line-height: 1.5; }
+  .tracker-card input { width: 100%; padding: 14px; border: 1px solid var(--line); border-radius: 10px; margin: 8px 0 12px; outline: none; background: var(--paper); }
+  .tracker-card input:focus { border-color: var(--teal-700); }
+  .tracker-message { margin-top: 12px; font-size: 13px; color: var(--teal-800); }
+  .tracker-message.error { color: var(--error); }
+  .demo-note { display: block; margin-top: 13px; color: var(--ink-faint); font-size: 10px; }
+  @media (max-width: 900px) { .hero { grid-template-columns: 1fr; } }
+  @media (max-width: 600px) { .hero { padding: 55px 6%; } .trust-row { flex-direction: column; gap: 8px; } }
+
+  /* Stats */
+  .stats { display: grid; grid-template-columns: repeat(4,1fr); border-bottom: 1px solid var(--line); }
+  .stats div { padding: 28px; text-align: center; border-right: 1px solid var(--line); }
+  .stats div:last-child { border-right: 0; }
+  .stats strong { display: block; color: var(--teal-800); font-size: 26px; font-family: var(--font-display); }
+  .stats span { color: var(--ink-faint); font-size: 12px; }
+  @media (max-width: 600px) { .stats { grid-template-columns: 1fr; } .stats div { border-right: 0; border-bottom: 1px solid var(--line); } }
+
+  /* Sections generic */
+  .section { padding: 90px 8%; }
+  .section.grey { background: var(--teal-050); }
+  .section-label { color: var(--teal-700); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; }
+  .section h2 { font-size: 36px; margin: 12px 0; }
+  .section-description { color: var(--ink-soft); }
+  @media (max-width: 600px) { .section { padding: 60px 6%; } }
+
+  /* Services */
+  .service-grid { margin-top: 38px; display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  .service-card { border: 1px solid var(--line); background: var(--paper); border-radius: var(--radius-md); padding: 22px; text-align: left; display: grid; grid-template-columns: auto 1fr auto; gap: 15px; align-items: center; transition: .2s; color: var(--ink); }
+  .service-card:hover { box-shadow: var(--shadow-card); transform: translateY(-2px); }
+  .service-icon { width: 48px; height: 48px; border-radius: 13px; display: grid; place-items: center; background: var(--teal-050); color: var(--teal-700); font-size: 24px; }
+  .service-content h3 { margin: 0 0 6px; font-size: 17px; }
+  .service-content p { margin: 0; color: var(--ink-faint); font-size: 13px; line-height: 1.5; }
+  @media (max-width: 900px) { .service-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .service-grid { grid-template-columns: 1fr; } }
+
+  /* Steps */
+  .steps { margin-top: 45px; display: grid; grid-template-columns: repeat(4,1fr); gap: 25px; }
+  .step { border-top: 2px solid var(--teal-100); padding-top: 18px; }
+  .step strong { color: var(--teal-700); font-family: var(--font-display); }
+  .step h3 { margin: 6px 0; font-size: 16px; }
+  .step p { color: var(--ink-soft); font-size: 14px; line-height: 1.5; }
+  @media (max-width: 900px) { .steps { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .steps { grid-template-columns: 1fr; } }
+
+  /* Jobs */
+  .jobs-section { padding: 75px 8%; display: grid; grid-template-columns: 1fr .7fr; gap: 60px; align-items: center; background: var(--teal-900); color: white; }
+  .jobs-section h2 { font-size: 34px; margin: 12px 0 18px; }
+  .jobs-section .light { color: #8fc4bf; }
+  .jobs-section p { color: #c3d9d7; line-height: 1.6; max-width: 460px; }
+  .jobs-section .secondary-button { margin-top: 24px; border: 0; }
+  .job-card { background: var(--paper); color: var(--ink); padding: 30px; border-radius: var(--radius-lg); }
+  .job-card-icon { font-size: 32px; }
+  .job-card h3 { margin: 10px 0 4px; }
+  .job-card p { color: var(--ink-faint); font-size: 13px; }
+  .job-progress { display: flex; gap: 8px; margin-top: 20px; }
+  .job-progress span { height: 9px; flex: 1; border-radius: 20px; background: var(--teal-100); }
+  .job-progress span:first-child { background: var(--teal-700); }
+  .job-links-wrap { grid-column: 1 / -1; margin-top: 4px; }
+  .job-links-heading { color: white; font-size: 21px; margin: 0 0 8px; }
+  .job-links-note { color: #c3d9d7; margin: 0 0 18px; font-size: 13px; }
+  .job-links-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .job-link-card { display: block; text-decoration: none; background: #fff; color: var(--ink); padding: 18px; border-radius: 14px; border: 1px solid rgba(255,255,255,.2); transition: transform .15s ease, box-shadow .15s ease; }
+  .job-link-card:hover, .job-link-card:focus-visible { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.16); outline: 2px solid #8fc4bf; }
+  .job-link-card strong { display: block; margin-bottom: 7px; }
+  .job-link-card span { display: block; font-size: 13px; line-height: 1.45; color: var(--ink-soft); }
+  .job-link-card em { display: inline-block; margin-top: 12px; font-size: 12px; color: var(--teal-700); font-style: normal; font-weight: 700; }
+  @media (max-width: 900px) { .jobs-section { grid-template-columns: 1fr; } .job-links-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 600px) { .jobs-section { padding: 60px 6%; } .job-links-grid { grid-template-columns: 1fr; } }
+
+  /* Ask Unai banner + modal */
+  .unai-section { margin: 75px 8%; padding: 35px; border-radius: var(--radius-lg); background: var(--teal-050); display: flex; gap: 25px; align-items: center; flex-wrap: wrap; }
+  .unai-section > div:nth-child(2) { flex: 1; min-width: 220px; }
+  .unai-icon { width: 58px; height: 58px; display: grid; place-items: center; border-radius: 15px; background: var(--teal-800); color: white; font-size: 28px; }
+  .unai-section h2 { font-size: 24px; margin: 6px 0; }
+  .unai-section p { color: var(--ink-soft); line-height: 1.5; }
+  .unai-section .primary-button { white-space: nowrap; }
+  @media (max-width: 600px) { .unai-section { margin: 45px 6%; flex-direction: column; align-items: flex-start; } }
+
+  .modal-background { position: fixed; inset: 0; z-index: 100; background: rgba(5,23,27,.75); display: grid; place-items: center; padding: 20px; }
+  .unai-modal { position: relative; width: min(580px,100%); padding: 35px; border-radius: var(--radius-lg); background: var(--paper); box-shadow: 0 30px 100px rgba(0,0,0,.3); max-height: 90vh; overflow-y: auto; }
+  .modal-close { position: absolute; top: 16px; right: 16px; width: 35px; height: 35px; border: 0; border-radius: 50%; background: var(--teal-050); font-size: 22px; }
+  .chat-message { margin: 12px 0; padding: 13px 15px; border-radius: 13px; background: var(--teal-050); color: var(--ink-soft); line-height: 1.5; max-width: 88%; }
+  .chat-message.user { background: var(--teal-800); color: white; margin-left: auto; }
+  .chat-thread { max-height: 360px; overflow-y: auto; padding-right: 4px; }
+  .chat-input-row { display: flex; gap: 8px; margin-top: 4px; }
+  .chat-input-row input { flex: 1; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
+  .chat-input-row input:focus { border-color: var(--teal-700); outline: none; }
+  .chat-input-row button { white-space: nowrap; }
+  .chat-options { display: grid; gap: 9px; }
+  .chat-options button { padding: 12px; text-align: left; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
+  .chat-options button:hover { background: var(--teal-050); }
+  .unai-modal small { display: block; margin-top: 16px; color: var(--ink-faint); line-height: 1.5; }
+
+  /* Footer */
+  footer { padding: 55px 8%; display: grid; grid-template-columns: 2fr 1fr 1fr 1.2fr; gap: 45px; background: var(--teal-900); color: white; }
+  footer .brand-logo { background: rgba(255,255,255,0.12); }
+  footer .brand small { color: #9db8b6; }
+  footer p, footer a { color: #9fb4b3; font-size: 12px; line-height: 1.7; }
+  footer a { display: block; margin: 7px 0; }
+  footer a:hover { color: white; }
+  footer h4 { margin: 0 0 6px; font-family: var(--font-body); font-size: 14px; }
+  .copyright { padding: 16px 7%; text-align: center; background: #082024; color: #6f8a89; font-size: 10px; padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+  @media (max-width: 900px) { footer { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { footer { grid-template-columns: 1fr; padding: 45px 6%; } }
+
+  /* Wizard */
+  .wizard-page { padding: 60px 6% 90px; max-width: 760px; margin: 0 auto; }
+  .wizard-card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-card); }
+  .wizard-card h2 { font-size: 26px; margin-bottom: 8px; }
+  .step-intro { color: var(--ink-soft); line-height: 1.6; margin-bottom: 26px; }
+  .draft-banner { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 14px 16px; margin-bottom: 26px; background: var(--amber-100); border: 1px solid #e3c393; border-radius: 10px; font-size: 13px; color: var(--ink); }
+  .draft-banner div { display: flex; gap: 8px; flex-shrink: 0; }
+  .draft-banner button { border: 0; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 700; }
+  .draft-banner button:first-child { background: var(--teal-800); color: white; }
+  .draft-banner button:last-child { background: transparent; color: var(--ink-soft); }
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field input, .field select, textarea { width: 100%; padding: 13px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); font-family: var(--font-body); }
+  .field input:focus, .field select:focus, textarea:focus { border-color: var(--teal-700); outline: none; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .field-error { display: block; margin-top: 6px; font-size: 12px; color: var(--error); }
+  .wizard-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 34px; padding-top: 24px; border-top: 1px solid var(--line); }
+  .btn-primary, .btn-secondary { border: 0; border-radius: 10px; padding: 13px 20px; font-weight: 700; }
+  .btn-primary { background: var(--teal-800); color: white; }
+  .btn-primary:hover { background: var(--teal-900); }
+  .btn-secondary { background: var(--teal-050); color: var(--teal-800); }
+  @media (max-width: 640px) { .wizard-card { padding: 26px 20px; } .field-row { grid-template-columns: 1fr; } }
+
+  .service-options { display: grid; gap: 10px; margin-top: 20px; }
+  .service-option { display: flex; gap: 14px; align-items: flex-start; text-align: left; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--paper); width: 100%; }
+  .service-option:hover { border-color: var(--teal-700); }
+  .service-option.selected { border-color: var(--teal-700); background: var(--teal-050); }
+  .service-option .icon { font-size: 22px; }
+  .service-option strong { display: block; margin-bottom: 4px; }
+  .service-option p { margin: 0; color: var(--ink-faint); font-size: 13px; line-height: 1.4; }
+
+  textarea { resize: vertical; }
+  .char-count { text-align: right; font-size: 11px; color: var(--ink-faint); margin-top: 6px; }
+
+  .dropzone { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 34px; border: 2px dashed var(--line); border-radius: var(--radius-md); text-align: center; cursor: pointer; background: var(--teal-050); }
+  .dropzone:hover { border-color: var(--teal-700); }
+  .dropzone input { display: none; }
+  .dropzone-icon { font-size: 26px; }
+  .dropzone small { color: var(--ink-faint); }
+  .file-list { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 8px; }
+  .file-list li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
+  .file-name { flex: 1; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .file-size { color: var(--ink-faint); font-size: 12px; }
+  .file-list button { border: 0; background: none; font-size: 18px; color: var(--ink-faint); line-height: 1; padding: 4px; }
+  .file-list button:hover { color: var(--error); }
+
+  .review-list { display: grid; gap: 2px; border: 1px solid var(--line); border-radius: var(--radius-md); overflow: hidden; }
+  .review-row { display: grid; grid-template-columns: 140px 1fr auto; gap: 12px; align-items: start; padding: 14px 16px; background: var(--paper); border-bottom: 1px solid var(--line); }
+  .review-row:last-child { border-bottom: 0; }
+  .review-row dt { color: var(--ink-faint); font-size: 13px; margin: 0; }
+  .review-row dd { margin: 0; font-size: 14px; }
+  .review-row.long dd { white-space: pre-wrap; }
+  .review-row button { border: 0; background: none; color: var(--teal-700); font-weight: 600; font-size: 13px; }
+  .review-row button:hover { text-decoration: underline; }
+  @media (max-width: 560px) { .review-row { grid-template-columns: 1fr auto; } .review-row dt { grid-column: 1 / -1; } }
+
+  .confirmation { text-align: center; max-width: 480px; margin: 0 auto; padding: 20px 0 10px; }
+  .confirmation-icon { width: 60px; height: 60px; margin: 0 auto 20px; border-radius: 50%; background: var(--teal-100); color: var(--teal-800); font-size: 28px; display: grid; place-items: center; }
+  .confirmation h2 { font-size: 26px; margin-bottom: 10px; }
+  .confirmation p { color: var(--ink-soft); line-height: 1.6; }
+  .reference-box { margin: 24px auto; padding: 16px; border: 1px dashed var(--teal-700); border-radius: 10px; font-family: var(--font-display); font-size: 20px; letter-spacing: 0.02em; color: var(--teal-800); background: var(--teal-050); }
+  .confirmation-note { font-size: 12px; color: var(--ink-faint); }
+  .confirmation-actions { margin-top: 26px; }
+  .confirmation-actions .primary-button { display: inline-block; }
+
+  /* Wizard progress */
+  .wizard-progress { list-style: none; display: flex; gap: 4px; padding: 0; margin: 0 0 40px; }
+  .wizard-progress li { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; position: relative; }
+  .wizard-progress li:not(:last-child)::after { content: ''; position: absolute; top: 15px; left: 55%; width: 90%; height: 2px; background: var(--line); z-index: 0; }
+  .wizard-progress li.done:not(:last-child)::after { background: var(--teal-700); }
+  .wp-dot { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--paper); border: 2px solid var(--line); color: var(--ink-faint); font-size: 13px; font-weight: 700; position: relative; z-index: 1; }
+  li.current .wp-dot { border-color: var(--teal-700); color: var(--teal-700); }
+  li.done .wp-dot { background: var(--teal-700); border-color: var(--teal-700); color: white; }
+  .wp-label { font-size: 11px; color: var(--ink-faint); max-width: 80px; }
+  li.current .wp-label { color: var(--teal-800); font-weight: 600; }
+  @media (max-width: 640px) { .wp-label { display: none; } }
+
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+  /* Revenue dashboard */
+  .dash-page { padding: 60px 8% 90px; max-width: 1000px; margin: 0 auto; }
+  .dash-header { margin-bottom: 34px; max-width: 640px; }
+  .dash-header-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .signout-button { border: 1px solid var(--line); background: var(--paper); border-radius: 8px; padding: 7px 12px; font-size: 12px; color: var(--ink-soft); }
+  .signout-button:hover { color: var(--error); border-color: var(--error); }
+  .login-card { max-width: 420px; margin: 0 auto; }
+  .cases-table-wrap { overflow-x: auto; }
+  .cases-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .cases-table th { text-align: left; padding: 8px 10px; color: var(--ink-faint); font-weight: 600; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  .cases-table td { padding: 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  .status-pill { background: var(--teal-050); color: var(--teal-800); padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .small-strong { font-size: 16px !important; }
+  .dash-header h2 { font-size: 30px; margin: 10px 0 12px; }
+  .dash-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 30px; }
+  .stat-card { padding: 20px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--paper); }
+  .stat-card.highlight { background: var(--teal-800); border-color: var(--teal-800); }
+  .stat-card span { display: block; font-size: 12px; color: var(--ink-faint); margin-bottom: 8px; }
+  .stat-card.highlight span { color: #bcdcda; }
+  .stat-card strong { font-family: var(--font-display); font-size: 24px; color: var(--teal-800); }
+  .stat-card.highlight strong { color: white; }
+  .chart-card { padding: 26px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--paper); box-shadow: var(--shadow-card); margin-bottom: 40px; }
+  .chart-card h3 { font-size: 16px; margin-bottom: 16px; }
+  .chart-svg { width: 100%; height: auto; }
+  .dash-section-label { color: var(--teal-700); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; }
+  .dash-subheading { font-size: 24px; margin: 10px 0 20px; }
+  .stream-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  .stream-card { padding: 20px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--paper); }
+  .stream-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .stream-icon { font-size: 22px; }
+  .stream-share { font-family: var(--font-display); font-size: 15px; color: var(--teal-700); font-weight: 600; }
+  .stream-card h4 { margin: 0 0 6px; font-size: 15px; font-family: var(--font-body); font-weight: 700; }
+  .stream-card p { color: var(--ink-faint); font-size: 12.5px; line-height: 1.5; margin-bottom: 14px; }
+  .stream-bar { height: 6px; border-radius: 20px; background: var(--teal-050); overflow: hidden; }
+  .stream-bar span { display: block; height: 100%; background: var(--teal-700); border-radius: 20px; }
+  @media (max-width: 900px) { .dash-stats { grid-template-columns: 1fr 1fr; } .stream-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .dash-page { padding: 45px 6% 70px; } .dash-stats { grid-template-columns: 1fr; } .stream-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+  window.addEventListener('load', function () {
+    setTimeout(function () {
+      var root = document.getElementById('root');
+      if (root && root.innerHTML.trim() === '') {
+        root.innerHTML =
+          '<div style="max-width:520px;margin:80px auto;padding:24px;font-family:sans-serif;' +
+          'border:1px solid #e1e6e5;border-radius:12px;color:#12252b;">' +
+          '<strong>The app failed to load.</strong><p>This usually means one of the CDN scripts ' +
+          '(React, Babel, or Supabase) did not load \u2014 check your internet connection, or open the ' +
+          'browser console (F12, then the Console tab) and share the red error text.</p></div>';
+      }
+    }, 2000);
+  });
+</script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useReducer, useEffect, useRef } = React;
+
+/* ---------------- data ---------------- */
+
+const PROVINCES = {
+  'City of Kigali': ['Nyarugenge', 'Gasabo', 'Kicukiro'],
+  'Northern Province': ['Burera', 'Gakenke', 'Gicumbi', 'Musanze', 'Rulindo'],
+  'Southern Province': ['Gisagara', 'Huye', 'Kamonyi', 'Muhanga', 'Nyamagabe', 'Nyanza', 'Nyaruguru', 'Ruhango'],
+  'Eastern Province': ['Bugesera', 'Gatsibo', 'Kayonza', 'Kirehe', 'Ngoma', 'Nyagatare', 'Rwamagana'],
+  'Western Province': ['Karongi', 'Ngororero', 'Nyabihu', 'Nyamasheke', 'Rubavu', 'Rusizi', 'Rutsiro'],
+};
+
+const SERVICES = [
+  { id: 'civil-dispute', icon: '🤝', title: 'Civil dispute / mediation', desc: 'Disagreements between individuals, neighbors, or businesses that need mediation or a formal hearing.' },
+  { id: 'land-property', icon: '🏡', title: 'Land and property dispute', desc: 'Boundary disputes, ownership claims, or property-registration issues.' },
+  { id: 'family-inheritance', icon: '👪', title: 'Family and inheritance matter', desc: 'Divorce, custody, succession, or inheritance-related requests.' },
+  { id: 'criminal-complaint', icon: '🚨', title: 'Criminal complaint', desc: 'Report an offense or follow up on an existing criminal case.' },
+  { id: 'labor-dispute', icon: '💼', title: 'Labor and employment dispute', desc: 'Wage, contract, or workplace disputes between employers and employees.' },
+  { id: 'legal-document', icon: '📄', title: 'Legal document request', desc: 'Certificates, affidavits, or other official legal documents.' },
+  { id: 'other', icon: '⚖️', title: 'Other justice service', desc: 'Anything that does not fit the categories above.' },
+];
+
+// NOTE: admin access is now a real Supabase role (profiles.role = 'admin'),
+// checked server-side by the is_admin() function and enforced by RLS —
+// this is real security, not a value sitting in this file.
+// The email below is only used to know which account to promote to admin
+// after you sign up through the app once (see the SQL note in the reply).
+const ADMIN_EMAIL = 'unaijoseph12@gmail.com';
+
+/* ---------------- Supabase (your real project) ---------------- */
+
+const SUPABASE_URL = 'https://vlenavlriyktqzwxanxu.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_iq3x5A8e9q_fEA7gJN_ytw_i47x387n';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const ASK_UNAI_URL = `${SUPABASE_URL}/functions/v1/ask-unai`;
+
+async function askUnai(messages) {
+  const res = await fetch(ASK_UNAI_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Something went wrong reaching Ask Unai.');
+  return data.reply;
+}
+
+async function saveCase(record) {
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) throw new Error('You need to be signed in to submit a case.');
+  const { data, error } = await sb.from('cases').insert({ ...record, user_id: user.id }).select().single();
+  if (error) throw error;
+  return data;
+}
+
+async function getCaseByReference(reference) {
+  const { data, error } = await sb.rpc('get_case_by_reference', { p_reference: reference.trim() });
+  if (error) throw error;
+  return data && data.length > 0 ? data[0] : null;
+}
+
+async function fetchProfile(userId) {
+  const { data, error } = await sb.from('profiles').select('*').eq('id', userId).single();
+  if (error) throw error;
+  return data;
+}
+
+function generateReference() {
+  const year = new Date().getFullYear();
+  const random = Math.floor(100000 + Math.random() * 900000);
+  return `RW-JUS-${year}-${random}`;
+}
+
+// Draft autosave stays on localStorage — it's just a convenience so an
+// in-progress form survives a refresh, not data anyone else needs to see.
+const DRAFT_KEY = 'rwandaJustice.draft.v1';
+function readJSON(key, fallback) {
+  try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
+  catch { return fallback; }
+}
+function writeJSON(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); return true; }
+  catch { return false; }
+}
+function saveDraft(step, data) {
+  const { documents, ...rest } = data;
+  writeJSON(DRAFT_KEY, { step, data: rest, savedAt: new Date().toISOString() });
+}
+function readDraft() { return readJSON(DRAFT_KEY, null); }
+function clearDraft() { try { localStorage.removeItem(DRAFT_KEY); } catch {} }
+
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+}
+function formatSize(bytes) {
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+/* ---------------- Ask Unai modal (real AI chat) ---------------- */
+
+function AskUnaiModal({ open, onClose }) {
+  const [messages, setMessages] = useState([
+    { role: 'assistant', content: 'Muraho! I\'m Unai. Ask me anything about justice services on this platform, or about your situation in general — I\'ll give you a straight answer.' },
+  ]);
+  const [input, setInput] = useState('');
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [messages, sending]);
+
+  if (!open) return null;
+
+  async function handleSend(e) {
+    e.preventDefault();
+    const text = input.trim();
+    if (!text || sending) return;
+    const nextMessages = [...messages, { role: 'user', content: text }];
+    setMessages(nextMessages);
+    setInput('');
+    setError('');
+    setSending(true);
+    try {
+      const reply = await askUnai(nextMessages);
+      setMessages((m) => [...m, { role: 'assistant', content: reply }]);
+    } catch (err) {
+      setError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setSending(false);
+    }
+  }
+
+  return (
+    <div className="modal-background" onClick={onClose}>
+      <div className="unai-modal" onClick={(e) => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose} aria-label="Close">×</button>
+        <div className="section-label">AI JUSTICE GUIDE</div>
+        <h2>Ask Unai 🤖</h2>
+
+        <div className="chat-thread" ref={scrollRef}>
+          {messages.map((m, i) => (
+            <div key={i} className={m.role === 'user' ? 'chat-message user' : 'chat-message'}>
+              {m.content}
+            </div>
+          ))}
+          {sending && <div className="chat-message"><em>Unai is typing…</em></div>}
+        </div>
+
+        {error && <p className="field-error" style={{ marginBottom: 10 }}>{error}</p>}
+
+        <form className="chat-input-row" onSubmit={handleSend}>
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask a question…"
+            autoFocus
+          />
+          <button type="submit" className="btn-primary" disabled={sending || !input.trim()}>Send</button>
+        </form>
+
+        <small>Ask Unai is a guidance assistant, not a lawyer. It does not act as a judge and does not guarantee legal outcomes.</small>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- Navbar / Footer ---------------- */
+
+function Navbar({ onNavigate, session, onSignOut }) {
+  const [unaiOpen, setUnaiOpen] = useState(false);
+  return (
+    <>
+      <header className="navbar">
+        <a href="#" className="brand" onClick={(e) => { e.preventDefault(); onNavigate('home'); }}>
+          <div className="brand-logo">⚖</div>
+          <div><strong>RWANDA JUSTICE</strong><small>Justice. Services. Opportunities.</small></div>
+        </a>
+        <nav>
+          <a href="#services" onClick={() => onNavigate('home')}>Services</a>
+          <a href="#how-it-works" onClick={() => onNavigate('home')}>How It Works</a>
+          <a href="#jobs" onClick={() => onNavigate('home')}>Jobs</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('dashboard'); }}>📊 Dashboard</a>
+          <button className="ask-button" onClick={() => setUnaiOpen(true)}>🤖 Ask Unai</button>
+          <select aria-label="Language"><option>English</option><option>Kinyarwanda</option><option>Français</option><option>Kiswahili</option></select>
+          {session ? (
+            <button className="login-button" onClick={onSignOut} title={session.user.email}>Sign out</button>
+          ) : (
+            <button className="login-button" onClick={(e) => { e.preventDefault(); onNavigate('account'); }}>Sign In</button>
+          )}
+        </nav>
+      </header>
+      <AskUnaiModal open={unaiOpen} onClose={() => setUnaiOpen(false)} />
+    </>
+  );
+}
+
+function Footer({ onNavigate }) {
+  return (
+    <>
+      <footer>
+        <div>
+          <div className="brand">
+            <div className="brand-logo">⚖</div>
+            <div><strong>RWANDA JUSTICE</strong><small>Justice. Services. Opportunities.</small></div>
+          </div>
+          <p>Independent digital justice platform concept owned by Mpawenayo Joseph.</p>
+        </div>
+        <div>
+          <h4>Platform</h4>
+          <a href="#services" onClick={() => onNavigate('home')}>Justice Services</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('wizard'); }}>Submit a Case</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('home'); }}>Track a Case</a>
+          <a href="#jobs" onClick={() => onNavigate('home')}>Jobs &amp; Opportunities</a>
+        </div>
+        <div>
+          <h4>Support</h4>
+          <a href="#">Ask Unai</a><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact</a>
+        </div>
+        <div>
+          <h4>Owner</h4>
+          <p>Mpawenayo Joseph</p><p>unaijoseph12@gmail.com</p><p>0780182309</p>
+        </div>
+      </footer>
+      <div className="copyright">© 2026 RWANDA JUSTICE · Independent platform concept. Not an official Government of Rwanda platform unless formally authorized.</div>
+    </>
+  );
+}
+
+/* ---------------- Home page sections ---------------- */
+
+function Hero({ onNavigate }) {
+  const [reference, setReference] = useState('');
+  const [status, setStatus] = useState(null);
+  const [tracking, setTracking] = useState(false);
+
+  async function trackCase(e) {
+    e.preventDefault();
+    const ref = reference.trim();
+    if (!ref) { setStatus({ error: true, message: 'Enter your case reference number to check its status.' }); return; }
+    setTracking(true);
+    try {
+      const record = await getCaseByReference(ref);
+      if (!record) {
+        setStatus({ error: true, message: `No case found for ${ref}. Double-check the reference number and try again.` });
+        return;
+      }
+      const service = SERVICES.find((s) => s.id === record.service);
+      setStatus({ error: false, message: `${service ? service.title : 'Case'} · submitted ${formatDate(record.submitted_at)} · Status: ${record.status}` });
+    } catch (err) {
+      setStatus({ error: true, message: err.message || 'Something went wrong looking up that case. Please try again.' });
+    } finally {
+      setTracking(false);
+    }
+  }
+
+  return (
+    <section className="hero">
+      <div className="hero-content">
+        <div className="badge">🇷🇼 Designed for citizens in Rwanda</div>
+        <h1>Access justice.<br /><span>Simply. Securely.</span></h1>
+        <p>RWANDA JUSTICE brings justice-service guidance, case submission, case tracking, documents and opportunities together in one digital experience.</p>
+        <div className="hero-actions">
+          <a href="#" className="primary-button" onClick={(e) => { e.preventDefault(); onNavigate('wizard'); }}>📝 Submit a Case →</a>
+          <a href="#services" className="secondary-button">Explore Services</a>
+        </div>
+        <div className="trust-row"><span>🛡️ Secure-by-design</span><span>✓ Case tracking</span><span>🌍 4 languages</span></div>
+      </div>
+
+      <form className="tracker-card" onSubmit={trackCase}>
+        <div className="tracker-header"><span>CASE TRACKER</span>🔍</div>
+        <h2>Track your case</h2>
+        <p>Enter your case reference number to check its current status.</p>
+        <input value={reference} onChange={(e) => setReference(e.target.value)} placeholder="RW-JUS-2026-000001" />
+        <button className="primary-button full" type="submit" disabled={tracking}>{tracking ? 'Checking…' : 'Track Case →'}</button>
+        {status && <p className={status.error ? 'tracker-message error' : 'tracker-message'}>{status.message}</p>}
+        <small className="demo-note">● Case status is stored in Supabase and can be checked from any device</small>
+      </form>
+    </section>
+  );
+}
+
+function Stats() {
+  const items = [{ v: '4', l: 'Languages' }, { v: '24/7', l: 'Digital access' }, { v: 'AI', l: 'Ask Unai' }, { v: '1', l: 'Citizen dashboard' }];
+  return <section className="stats">{items.map((s) => <div key={s.l}><strong>{s.v}</strong><span>{s.l}</span></div>)}</section>;
+}
+
+function Services({ onNavigate }) {
+  const cards = [
+    { icon: '📝', title: 'Submit a Case', desc: 'Start a guided digital justice request.', action: () => onNavigate('wizard') },
+    { icon: '🔍', title: 'Track My Case', desc: 'Check the progress of an existing request.', action: () => document.getElementById('tracker-focus')?.scrollIntoView({ behavior: 'smooth' }) },
+    { icon: '⚖️', title: 'Justice Services', desc: 'Explore available justice-related services.' },
+    { icon: '📄', title: 'Legal Documents', desc: 'Find guidance about legal documents.' },
+    { icon: '🤝', title: 'Legal Assistance', desc: 'Find information about appropriate support.' },
+    { icon: '📅', title: 'Appointments', desc: 'Manage supported justice-service appointments.' },
+  ];
+  return (
+    <section id="services" className="section">
+      <div className="section-label">JUSTICE SERVICES</div>
+      <h2>What do you need help with?</h2>
+      <p className="section-description">Choose a service and follow a guided digital process.</p>
+      <div className="service-grid">
+        {cards.map((s) => (
+          <button key={s.title} className="service-card" onClick={s.action}>
+            <div className="service-icon">{s.icon}</div>
+            <div className="service-content"><h3>{s.title}</h3><p>{s.desc}</p></div>
+            <span>→</span>
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function HowItWorks() {
+  const steps = [
+    { n: '01', title: 'Create an account', desc: 'Register and verify your email or phone with a one-time code.' },
+    { n: '02', title: 'Choose a service', desc: 'Tell us what service you need.' },
+    { n: '03', title: 'Submit securely', desc: 'Review your information before submission.' },
+    { n: '04', title: 'Track progress', desc: 'Follow updates using your reference number.' },
+  ];
+  return (
+    <section id="how-it-works" className="section grey">
+      <div className="section-label">HOW IT WORKS</div>
+      <h2>A simpler journey</h2>
+      <div className="steps">{steps.map((s) => <div className="step" key={s.n}><strong>{s.n}</strong><h3>{s.title}</h3><p>{s.desc}</p></div>)}</div>
+    </section>
+  );
+}
+
+function Jobs() {
+  return (
+    <section id="jobs" className="jobs-section">
+      <div>
+        <div className="section-label light">JOBS &amp; OPPORTUNITIES</div>
+        <h2>Build your next opportunity.</h2>
+        <p>Create a job-seeker profile, upload your CV, discover opportunities and track applications.</p>
+        <a className="secondary-button" href="https://recruitment.mifotra.gov.rw/Home/Index" target="_blank" rel="noopener noreferrer">💼 Browse Government Jobs ↗</a>
+      </div>
+      <div className="job-card">
+        <div className="job-card-icon">👤</div>
+        <h3>Job Seeker</h3>
+        <p>Explore verified source portals, check deadlines, and apply directly with the recruiting organization.</p>
+        <div className="job-progress"><span></span><span></span><span></span></div>
+      </div>
+      <div className="job-links-wrap">
+        <h3 className="job-links-heading">Find opportunities across Rwanda</h3>
+        <p className="job-links-note">These links open external websites. Check each vacancy's deadline and requirements before applying.</p>
+        <div className="job-links-grid">
+          <a className="job-link-card" href="https://recruitment.mifotra.gov.rw/Home/Index" target="_blank" rel="noopener noreferrer"><strong>🇷🇼 MIFOTRA — Government Jobs</strong><span>Official Rwanda civil-service recruitment portal for public-sector vacancies and applications.</span><em>Search government vacancies ↗</em></a>
+          <a className="job-link-card" href="https://psf.org.rw/" target="_blank" rel="noopener noreferrer"><strong>🏢 PSF Rwanda — Private Sector</strong><span>Explore Rwanda's Private Sector Federation, business network, training, and member organizations. This is not a dedicated vacancy board.</span><em>Visit PSF Rwanda ↗</em></a>
+          <a className="job-link-card" href="https://rdb.rw/careers/" target="_blank" rel="noopener noreferrer"><strong>🌱 Rwanda Development Board</strong><span>Check RDB's official careers page for recruitment announcements and selection updates.</span><em>View RDB careers ↗</em></a>
+          <a className="job-link-card" href="https://www.jobinrwanda.com/" target="_blank" rel="noopener noreferrer"><strong>🔎 Job in Rwanda</strong><span>Browse vacancies from companies, NGOs, and other employers, with location and deadline details.</span><em>Browse job listings ↗</em></a>
+          <a className="job-link-card" href="https://www.brightermonday.co.rw/jobs" target="_blank" rel="noopener noreferrer"><strong>💼 BrighterMonday Rwanda</strong><span>Search private-sector roles, internships, graduate opportunities, and jobs by location or experience.</span><em>Find private-sector jobs ↗</em></a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function AskUnaiBanner() {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <section className="unai-section">
+        <div className="unai-icon">🤖</div>
+        <div>
+          <div className="section-label">ASK UNAI</div>
+          <h2>Your digital justice guide</h2>
+          <p>Ask Unai can guide users through justice services, explain submission steps and provide general service information.</p>
+        </div>
+        <button className="primary-button" onClick={() => setOpen(true)}>Talk to Ask Unai →</button>
+      </section>
+      <AskUnaiModal open={open} onClose={() => setOpen(false)} />
+    </>
+  );
+}
+
+function Home({ onNavigate }) {
+  return (
+    <>
+      <Hero onNavigate={onNavigate} />
+      <Stats />
+      <Services onNavigate={onNavigate} />
+      <HowItWorks />
+      <Jobs />
+      <AskUnaiBanner />
+    </>
+  );
+}
+
+/* ---------------- Wizard ---------------- */
+
+const STEP_LABELS = ['Your details', 'Service', 'Location', 'Description', 'Documents', 'Review'];
+const TOTAL_STEPS = 6;
+const MIN_DESC_LENGTH = 30;
+
+const initialWizardState = {
+  fullName: '', phone: '', email: '', nationalId: '',
+  service: '', province: '', district: '', sector: '',
+  description: '', documents: [],
+};
+
+function wizardReducer(state, action) {
+  if (action.type === 'update') return { ...state, [action.field]: action.value };
+  return state;
+}
+
+function validateStep(step, data) {
+  const errors = {};
+  if (step === 1) {
+    if (!data.fullName.trim()) errors.fullName = 'Enter your full name.';
+    if (!data.phone.trim()) errors.phone = 'Enter a phone number so we can reach you.';
+    if (!data.nationalId.trim() || data.nationalId.replace(/\D/g, '').length < 16) errors.nationalId = 'Enter a valid 16-digit national ID number.';
+  }
+  if (step === 2) { if (!data.service) errors.service = 'Select a service to continue.'; }
+  if (step === 3) {
+    if (!data.province) errors.province = 'Select a province.';
+    if (!data.district) errors.district = 'Select a district.';
+    if (!data.sector.trim()) errors.sector = 'Enter a sector.';
+  }
+  if (step === 4) { if (data.description.trim().length < MIN_DESC_LENGTH) errors.description = `Add a bit more detail (at least ${MIN_DESC_LENGTH} characters).`; }
+  return errors;
+}
+
+function WizardProgress({ step }) {
+  return (
+    <ol className="wizard-progress" aria-label="Case submission progress">
+      {STEP_LABELS.map((label, i) => {
+        const n = i + 1;
+        const state = n < step ? 'done' : n === step ? 'current' : 'upcoming';
+        return (
+          <li key={label} className={state}>
+            <span className="wp-dot">{n < step ? '✓' : n}</span>
+            <span className="wp-label">{label}</span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+function StepDetails({ data, errors, onChange }) {
+  return (
+    <div>
+      <h2>Your details</h2>
+      <p className="step-intro">This is how we'll reach you about your case. It's kept confidential and shared only with the office handling your request.</p>
+      <div className="field">
+        <label htmlFor="fullName">Full name</label>
+        <input id="fullName" value={data.fullName} onChange={(e) => onChange('fullName', e.target.value)} placeholder="e.g. Uwase Aline" />
+        {errors.fullName && <span className="field-error">{errors.fullName}</span>}
+      </div>
+      <div className="field-row">
+        <div className="field">
+          <label htmlFor="phone">Phone number</label>
+          <input id="phone" value={data.phone} onChange={(e) => onChange('phone', e.target.value)} placeholder="078 000 0000" />
+          {errors.phone && <span className="field-error">{errors.phone}</span>}
+        </div>
+        <div className="field">
+          <label htmlFor="email">Email (optional)</label>
+          <input id="email" type="email" value={data.email} onChange={(e) => onChange('email', e.target.value)} placeholder="you@example.com" />
+        </div>
+      </div>
+      <div className="field">
+        <label htmlFor="nationalId">National ID number</label>
+        <input id="nationalId" value={data.nationalId} onChange={(e) => onChange('nationalId', e.target.value)} placeholder="16 digits" />
+        {errors.nationalId && <span className="field-error">{errors.nationalId}</span>}
+      </div>
+    </div>
+  );
+}
+
+function StepService({ data, errors, onChange }) {
+  return (
+    <div>
+      <h2>What kind of service do you need?</h2>
+      <p className="step-intro">Choose the option that best matches your situation. You can add more detail in the next steps.</p>
+      <div className="service-options" role="radiogroup" aria-label="Service type">
+        {SERVICES.map((s) => (
+          <button type="button" key={s.id} role="radio" aria-checked={data.service === s.id}
+            className={data.service === s.id ? 'service-option selected' : 'service-option'}
+            onClick={() => onChange('service', s.id)}>
+            <span className="icon">{s.icon}</span>
+            <span><strong>{s.title}</strong><p>{s.desc}</p></span>
+          </button>
+        ))}
+      </div>
+      {errors.service && <span className="field-error">{errors.service}</span>}
+    </div>
+  );
+}
+
+function StepLocation({ data, errors, onChange }) {
+  const districts = data.province ? PROVINCES[data.province] : [];
+  function handleProvince(value) { onChange('province', value); onChange('district', ''); }
+  return (
+    <div>
+      <h2>Where did this happen?</h2>
+      <p className="step-intro">This routes your case to the right local justice office.</p>
+      <div className="field-row">
+        <div className="field">
+          <label htmlFor="province">Province</label>
+          <select id="province" value={data.province} onChange={(e) => handleProvince(e.target.value)}>
+            <option value="">Select a province</option>
+            {Object.keys(PROVINCES).map((p) => <option key={p} value={p}>{p}</option>)}
+          </select>
+          {errors.province && <span className="field-error">{errors.province}</span>}
+        </div>
+        <div className="field">
+          <label htmlFor="district">District</label>
+          <select id="district" value={data.district} onChange={(e) => onChange('district', e.target.value)} disabled={!data.province}>
+            <option value="">{data.province ? 'Select a district' : 'Select a province first'}</option>
+            {districts.map((d) => <option key={d} value={d}>{d}</option>)}
+          </select>
+          {errors.district && <span className="field-error">{errors.district}</span>}
+        </div>
+      </div>
+      <div className="field">
+        <label htmlFor="sector">Sector</label>
+        <input id="sector" value={data.sector} onChange={(e) => onChange('sector', e.target.value)} placeholder="e.g. Kimironko" />
+        {errors.sector && <span className="field-error">{errors.sector}</span>}
+      </div>
+    </div>
+  );
+}
+
+function StepDescription({ data, errors, onChange }) {
+  const count = data.description.length;
+  const MAX_LENGTH = 2000;
+  return (
+    <div>
+      <h2>Describe your case</h2>
+      <p className="step-intro">Explain what happened, when, and who was involved. Specific dates and names help the reviewing office act faster.</p>
+      <div className="field">
+        <label htmlFor="description">Case description</label>
+        <textarea id="description" rows={8} maxLength={MAX_LENGTH} value={data.description}
+          onChange={(e) => onChange('description', e.target.value)} placeholder="Start with what happened and when..." />
+        <div className="char-count">{count}/{MAX_LENGTH} characters (minimum {MIN_DESC_LENGTH})</div>
+        {errors.description && <span className="field-error">{errors.description}</span>}
+      </div>
+    </div>
+  );
+}
+
+const MAX_FILE_MB = 10;
+
+function StepDocuments({ data, errors, onChange }) {
+  function handleFiles(e) {
+    const incoming = Array.from(e.target.files || []);
+    const tooLarge = incoming.filter((f) => f.size > MAX_FILE_MB * 1024 * 1024);
+    const accepted = incoming.filter((f) => f.size <= MAX_FILE_MB * 1024 * 1024);
+    if (tooLarge.length) alert(`${tooLarge.map((f) => f.name).join(', ')} exceeds the ${MAX_FILE_MB} MB limit and was not added.`);
+    onChange('documents', [...data.documents, ...accepted]);
+    e.target.value = '';
+  }
+  function removeFile(index) { onChange('documents', data.documents.filter((_, i) => i !== index)); }
+  return (
+    <div>
+      <h2>Upload supporting documents</h2>
+      <p className="step-intro">ID copies, contracts, photos, or anything else relevant. This step is optional — you can also submit and add documents later.</p>
+      <label className="dropzone">
+        <input type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" onChange={handleFiles} />
+        <span className="dropzone-icon">📎</span>
+        <span><strong>Click to upload</strong> or drag files here</span>
+        <small>PDF, JPG, PNG, DOC — up to {MAX_FILE_MB} MB each</small>
+      </label>
+      {data.documents.length > 0 && (
+        <ul className="file-list">
+          {data.documents.map((f, i) => (
+            <li key={`${f.name}-${i}`}>
+              <span className="file-icon">📄</span>
+              <span className="file-name">{f.name}</span>
+              <span className="file-size">{formatSize(f.size)}</span>
+              <button type="button" onClick={() => removeFile(i)} aria-label={`Remove ${f.name}`}>×</button>
+            </li>
+          ))}
+        </ul>
+      )}
+      {errors.documents && <span className="field-error">{errors.documents}</span>}
+    </div>
+  );
+}
+
+function StepReview({ data, onEdit }) {
+  const service = SERVICES.find((s) => s.id === data.service);
+  const rows = [
+    { label: 'Full name', value: data.fullName, step: 1 },
+    { label: 'Phone', value: data.phone, step: 1 },
+    { label: 'National ID', value: data.nationalId, step: 1 },
+    { label: 'Service', value: service?.title, step: 2 },
+    { label: 'Location', value: [data.sector, data.district, data.province].filter(Boolean).join(', '), step: 3 },
+    { label: 'Description', value: data.description, step: 4, long: true },
+    { label: 'Documents', value: data.documents.length ? `${data.documents.length} file(s) attached` : 'None attached', step: 5 },
+  ];
+  return (
+    <div>
+      <h2>Review your submission</h2>
+      <p className="step-intro">Check everything below is correct before you submit. You can jump back to fix anything.</p>
+      <dl className="review-list">
+        {rows.map((r) => (
+          <div className={r.long ? 'review-row long' : 'review-row'} key={r.label}>
+            <dt>{r.label}</dt>
+            <dd>{r.value || <em>Not provided</em>}</dd>
+            <button type="button" onClick={() => onEdit(r.step)}>Edit</button>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
+}
+
+function StepConfirmation({ reference, onNavigate }) {
+  return (
+    <div className="confirmation">
+      <div className="confirmation-icon">✓</div>
+      <h2>Case submitted</h2>
+      <p>Your request has been recorded. Save this reference number to track its progress.</p>
+      <div className="reference-box">{reference}</div>
+      <p className="confirmation-note">Your case is now stored in the database and can be tracked from any device using the reference number above. Keep it somewhere safe.</p>
+      <div className="confirmation-actions">
+        <a href="#" className="primary-button" onClick={(e) => { e.preventDefault(); onNavigate('home'); }}>Track this case →</a>
+      </div>
+    </div>
+  );
+}
+
+function SubmitCase({ onNavigate }) {
+  const [data, dispatch] = useReducer(wizardReducer, initialWizardState);
+  const [step, setStep] = useState(1);
+  const [errors, setErrors] = useState({});
+  const [reference, setReference] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [draft] = useState(() => readDraft());
+  const [draftDismissed, setDraftDismissed] = useState(false);
+  const skipNextAutosave = useRef(true);
+
+  useEffect(() => {
+    if (skipNextAutosave.current) { skipNextAutosave.current = false; return; }
+    saveDraft(step, data);
+  }, [step, data]);
+
+  function onChange(field, value) {
+    dispatch({ type: 'update', field, value });
+    if (errors[field]) setErrors((e) => ({ ...e, [field]: undefined }));
+  }
+  function resumeDraft() {
+    Object.entries(draft.data).forEach(([field, value]) => dispatch({ type: 'update', field, value }));
+    setStep(draft.step);
+    setDraftDismissed(true);
+  }
+  function discardDraft() { clearDraft(); setDraftDismissed(true); }
+  function goNext() {
+    const stepErrors = validateStep(step, data);
+    if (Object.keys(stepErrors).length) { setErrors(stepErrors); return; }
+    setErrors({});
+    setStep((s) => Math.min(s + 1, TOTAL_STEPS));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function goBack() { setStep((s) => Math.max(s - 1, 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  function goToStep(n) { setStep(n); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  async function submit() {
+    setSubmitting(true);
+    setSubmitError('');
+    const ref = generateReference();
+    try {
+      await saveCase({
+        reference: ref,
+        full_name: data.fullName,
+        phone: data.phone,
+        email: data.email || null,
+        national_id: data.nationalId,
+        service: data.service,
+        province: data.province,
+        district: data.district,
+        sector: data.sector,
+        description: data.description,
+        documents: data.documents.map((f) => ({ name: f.name, size: f.size })),
+        status: 'Under Review',
+      });
+      clearDraft();
+      setReference(ref);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      setSubmitError(err.message || 'Something went wrong submitting your case. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (reference) {
+    return <main className="wizard-page"><div className="wizard-card"><StepConfirmation reference={reference} onNavigate={onNavigate} /></div></main>;
+  }
+
+  const showDraftBanner = draft && !draftDismissed;
+
+  return (
+    <main className="wizard-page">
+      <div className="wizard-card">
+        {showDraftBanner && (
+          <div className="draft-banner">
+            <span>You have a saved draft from earlier. Resume where you left off?</span>
+            <div>
+              <button type="button" onClick={resumeDraft}>Resume draft</button>
+              <button type="button" onClick={discardDraft}>Start over</button>
+            </div>
+          </div>
+        )}
+        <WizardProgress step={step} />
+        {step === 1 && <StepDetails data={data} errors={errors} onChange={onChange} />}
+        {step === 2 && <StepService data={data} errors={errors} onChange={onChange} />}
+        {step === 3 && <StepLocation data={data} errors={errors} onChange={onChange} />}
+        {step === 4 && <StepDescription data={data} errors={errors} onChange={onChange} />}
+        {step === 5 && <StepDocuments data={data} errors={errors} onChange={onChange} />}
+        {step === 6 && <StepReview data={data} onEdit={goToStep} />}
+        <div className="wizard-actions">
+          {step > 1 ? <button type="button" className="btn-secondary" onClick={goBack}>← Back</button> : <span />}
+          {step < TOTAL_STEPS
+            ? <button type="button" className="btn-primary" onClick={goNext}>Continue →</button>
+            : <button type="button" className="btn-primary" onClick={submit}>Submit case</button>}
+        </div>
+      </div>
+    </main>
+  );
+}
+
+/* ---------------- Sign in / sign up + access gate ---------------- */
+
+function AuthForm({ notice: initialNotice }) {
+  const [mode, setMode] = useState('signin'); // signin | signup | verify
+  const [method, setMethod] = useState('email'); // email OTP or SMS OTP
+  const [pendingMethod, setPendingMethod] = useState('email');
+  const [pendingContact, setPendingContact] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
+  const [error, setError] = useState('');
+  const [notice, setNotice] = useState(initialNotice || '');
+  const [loading, setLoading] = useState(false);
+
+  function normalizePhoneNumber(value) {
+    const compact = String(value || '').trim().replace(/[()\s.-]/g, '');
+    const digits = compact.replace(/\D/g, '');
+    if (compact.startsWith('+')) return `+${digits}`;
+    if (digits.startsWith('00')) return `+${digits.slice(2)}`;
+    if (digits.startsWith('250')) return `+${digits}`;
+    if (digits.startsWith('0')) return `+250${digits.slice(1)}`;
+    return `+${digits}`;
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setNotice('');
+    try {
+      if (mode === 'verify') {
+        const cleanCode = otp.trim();
+        if (!/^\d{6,10}$/.test(cleanCode)) {
+          throw new Error('Enter the numeric verification code from your message.');
+        }
+        const result = pendingMethod === 'phone'
+          ? await sb.auth.verifyOtp({ phone: pendingContact, token: cleanCode, type: 'sms' })
+          : await sb.auth.verifyOtp({ email: pendingContact, token: cleanCode, type: 'signup' });
+        if (result.error) throw result.error;
+        setNotice('Your account has been verified. You can now continue.');
+        setOtp('');
+        // Successful verification creates a Supabase session. The app shell
+        // listens for that session and opens the requested signed-in page.
+        return;
+      }
+
+      if (mode === 'signin') {
+        const contact = identifier.trim();
+        if (!contact) throw new Error('Enter your email address or phone number.');
+        const credentials = contact.includes('@')
+          ? { email: contact, password }
+          : { phone: normalizePhoneNumber(contact), password };
+        const { error: signInError } = await sb.auth.signInWithPassword(credentials);
+        if (signInError) throw signInError;
+        return;
+      }
+
+      const normalizedPhone = normalizePhoneNumber(phone);
+      const chosenContact = method === 'email' ? email.trim().toLowerCase() : normalizedPhone;
+      if (!fullName.trim()) throw new Error('Enter your full name.');
+      if (!/^\+\d{8,15}$/.test(normalizedPhone)) {
+        throw new Error('Enter a valid phone number with its country code, for example +25078XXXXXXX.');
+      }
+
+      let signup;
+      if (method === 'email') {
+        if (!email.trim()) throw new Error('Enter the email address where you want to receive the code.');
+        signup = await sb.auth.signUp({
+          email: chosenContact,
+          password,
+          options: {
+            data: { full_name: fullName.trim(), phone: normalizedPhone },
+            emailRedirectTo: window.location.href.split('?')[0],
+          },
+        });
+      } else {
+        signup = await sb.auth.signUp({
+          phone: chosenContact,
+          password,
+          options: {
+            data: { full_name: fullName.trim(), phone: normalizedPhone, email: email.trim().toLowerCase() || null },
+          },
+        });
+      }
+      if (signup.error) throw signup.error;
+
+      // OTP verification must be enabled in Supabase. If a session is returned
+      // immediately, the project is configured to skip confirmation, so don't
+      // falsely tell the user that a code was sent.
+      if (signup.data && signup.data.session) {
+        await sb.auth.signOut();
+        throw new Error(method === 'email'
+          ? 'No verification code was sent because email confirmation is disabled in the authentication settings. Enable Confirm email in Supabase, then try again.'
+          : 'No SMS verification code was sent because phone confirmation is disabled or SMS delivery is not configured in Supabase. Enable phone confirmations and configure an SMS provider, then try again.');
+      }
+
+      setPendingMethod(method);
+      setPendingContact(chosenContact);
+      setOtp('');
+      setMode('verify');
+      setNotice(method === 'email'
+        ? `We requested a verification code for ${chosenContact}. Enter the code from the email to finish creating your account.`
+        : `We requested an SMS verification code for ${chosenContact}. Enter the code from the text message to finish creating your account.`);
+    } catch (err) {
+      setError(err?.message || 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function resendCode() {
+    setLoading(true);
+    setError('');
+    setNotice('');
+    try {
+      const result = pendingMethod === 'phone'
+        ? await sb.auth.resend({ type: 'sms', phone: pendingContact })
+        : await sb.auth.resend({ type: 'signup', email: pendingContact });
+      if (result.error) throw result.error;
+      setNotice(`A new verification code has been requested for ${pendingContact}.`);
+    } catch (err) {
+      setError(err?.message || 'Unable to resend the code right now. Please wait and try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const isVerifying = mode === 'verify';
+  const isSigningUp = mode === 'signup';
+
+  return (
+    <main className="wizard-page">
+      <form className="wizard-card login-card" onSubmit={handleSubmit}>
+        <div className="section-label">
+          {isVerifying ? 'VERIFY YOUR ACCOUNT' : isSigningUp ? 'CREATE AN ACCOUNT' : 'SIGN IN'}
+        </div>
+        <h2>{isVerifying ? 'Enter your verification code' : isSigningUp ? 'Create your account' : 'Welcome back'}</h2>
+        <p className="step-intro">
+          {isVerifying
+            ? `Enter the one-time code sent to ${pendingContact}. Do not share this code with anyone.`
+            : isSigningUp
+              ? 'Create an account to submit and track your cases. Choose whether the verification code should arrive by email or SMS.'
+              : 'Sign in to submit or track a case, or view the owner dashboard if your account has admin access.'}
+        </p>
+
+        {notice && <p className="tracker-message" role="status" style={{ marginBottom: 16 }}>{notice}</p>}
+
+        {isVerifying ? (
+          <>
+            <div className="field">
+              <label htmlFor="auth-code">Verification code</label>
+              <input id="auth-code" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6,10}" maxLength={10} value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 10))} placeholder="Enter code" required autoFocus />
+            </div>
+            {error && <span className="field-error" role="alert">{error}</span>}
+            <div className="wizard-actions">
+              <button type="button" className="btn-secondary" disabled={loading} onClick={() => { setMode('signup'); setOtp(''); setError(''); setNotice(''); }}>Change details</button>
+              <button type="submit" className="btn-primary" disabled={loading}>{loading ? 'Checking…' : 'Verify code →'}</button>
+            </div>
+            <button type="button" className="btn-secondary" style={{ width: '100%', marginTop: 10 }} disabled={loading} onClick={resendCode}>{loading ? 'Please wait…' : 'Resend verification code'}</button>
+          </>
+        ) : (
+          <>
+            {isSigningUp && (
+              <>
+                <div className="field">
+                  <label htmlFor="auth-name">Full name</label>
+                  <input id="auth-name" value={fullName} onChange={(e) => setFullName(e.target.value)} autoComplete="name" required />
+                </div>
+                <div className="field">
+                  <label htmlFor="auth-method">Send verification code by</label>
+                  <select id="auth-method" value={method} onChange={(e) => setMethod(e.target.value)}>
+                    <option value="email">Email code</option>
+                    <option value="phone">SMS text message</option>
+                  </select>
+                  {method === 'phone' && <p className="step-intro" style={{ marginTop: 6 }}>SMS verification requires phone confirmation and an SMS provider to be configured in the project's Supabase settings.</p>}
+                </div>
+                <div className="field">
+                  <label htmlFor="auth-phone">Phone number</label>
+                  <input id="auth-phone" type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="078XXXXXXX or +25078XXXXXXX" required />
+                </div>
+                <div className="field">
+                  <label htmlFor="auth-email">Email address{method === 'phone' ? ' (optional)' : ''}</label>
+                  <input id="auth-email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required={method === 'email'} placeholder={method === 'phone' ? 'Optional contact email' : 'you@example.com'} />
+                </div>
+              </>
+            )}
+
+            {!isSigningUp && (
+              <div className="field">
+                <label htmlFor="auth-identifier">Email or phone number</label>
+                <input id="auth-identifier" type="text" inputMode="email" autoComplete="username" value={identifier} onChange={(e) => setIdentifier(e.target.value)} placeholder="you@example.com or +25078XXXXXXX" required autoFocus />
+              </div>
+            )}
+            <div className="field">
+              <label htmlFor="auth-password">Password</label>
+              <input id="auth-password" type="password" autoComplete={isSigningUp ? 'new-password' : 'current-password'} value={password} onChange={(e) => setPassword(e.target.value)} minLength={isSigningUp ? 8 : undefined} required />
+            </div>
+            {error && <span className="field-error" role="alert">{error}</span>}
+
+            <div className="wizard-actions">
+              <button type="button" className="btn-secondary" onClick={() => { setMode(isSigningUp ? 'signin' : 'signup'); setError(''); setNotice(''); }}>
+                {isSigningUp ? 'Have an account? Sign in' : 'Create an account'}
+              </button>
+              <button type="submit" className="btn-primary" disabled={loading}>
+                {loading ? 'Please wait…' : isSigningUp ? 'Send verification code →' : 'Sign in →'}
+              </button>
+            </div>
+          </>
+        )}
+      </form>
+    </main>
+  );
+}
+function AuthGate({ session, profile, requireAdmin, children }) {
+  if (session === undefined) return null; // still checking
+  if (session === null) return <AuthForm />;
+  if (requireAdmin && (!profile || profile.role !== 'admin')) {
+    return (
+      <main className="wizard-page">
+        <div className="wizard-card login-card" style={{ textAlign: 'center' }}>
+          <div className="section-label">OWNER DASHBOARD</div>
+          <h2>Admins only</h2>
+          <p className="step-intro">This account doesn't have admin access. Signed in as {session.user.email || session.user.phone}.</p>
+        </div>
+      </main>
+    );
+  }
+  return children;
+}
+
+/* ---------------- Revenue dashboard ---------------- */
+
+const REVENUE_STREAMS = [
+  { icon: '📝', title: 'Case filing & processing fees', desc: 'A small fee per submitted case, tiered by service type.', share: 32 },
+  { icon: '⚡', title: 'Priority / express processing', desc: 'Optional add-on for faster review on time-sensitive cases.', share: 18 },
+  { icon: '📄', title: 'Document certification', desc: 'Certified copies, affidavits, and official document requests.', share: 15 },
+  { icon: '💼', title: 'Job board employer listings', desc: 'Employers pay to post openings and access the job-seeker pool.', share: 14 },
+  { icon: '🤖', title: 'Ask Unai Pro subscription', desc: 'Monthly subscription for legal practitioners and firms with advanced tools.', share: 12 },
+  { icon: '🤝', title: 'Government & NGO partnerships', desc: 'Licensing and integration fees from institutional partners.', share: 9 },
+];
+
+// Illustrative monthly revenue in RWF — replace with real figures once
+// payments are integrated. Overall upward trend with realistic month-to-month noise.
+const REVENUE_HISTORY = [
+  { month: 'Jan', value: 820000 }, { month: 'Feb', value: 940000 }, { month: 'Mar', value: 1050000 },
+  { month: 'Apr', value: 1180000 }, { month: 'May', value: 1120000 }, { month: 'Jun', value: 1390000 },
+  { month: 'Jul', value: 1560000 }, { month: 'Aug', value: 1740000 }, { month: 'Sep', value: 1980000 },
+  { month: 'Oct', value: 2260000 }, { month: 'Nov', value: 2510000 }, { month: 'Dec', value: 2890000 },
+];
+
+function formatRWF(n) {
+  return new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 }).format(n) + ' RWF';
+}
+
+function RevenueChart({ data }) {
+  const width = 640, height = 260, padL = 50, padR = 20, padT = 20, padB = 36;
+  const max = Math.max(...data.map((d) => d.value));
+  const min = 0;
+  const innerW = width - padL - padR, innerH = height - padT - padB;
+  const x = (i) => padL + (i / (data.length - 1)) * innerW;
+  const y = (v) => padT + innerH - ((v - min) / (max - min)) * innerH;
+
+  const linePoints = data.map((d, i) => `${x(i)},${y(d.value)}`).join(' ');
+  const areaPoints = `${padL},${padT + innerH} ${linePoints} ${padL + innerW},${padT + innerH}`;
+
+  const gridLines = [0, 0.25, 0.5, 0.75, 1].map((f) => padT + innerH * (1 - f));
+
+  return (
+    <svg viewBox={`0 0 ${width} ${height}`} className="chart-svg" role="img" aria-label="Monthly revenue trend, increasing over the year">
+      <defs>
+        <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--teal-700)" stopOpacity="0.28" />
+          <stop offset="100%" stopColor="var(--teal-700)" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {gridLines.map((gy, i) => <line key={i} x1={padL} x2={width - padR} y1={gy} y2={gy} stroke="var(--line)" strokeWidth="1" />)}
+      <polygon points={areaPoints} fill="url(#revFill)" />
+      <polyline points={linePoints} fill="none" stroke="var(--teal-700)" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+      {data.map((d, i) => <circle key={d.month} cx={x(i)} cy={y(d.value)} r="3.5" fill="var(--teal-800)" />)}
+      {data.map((d, i) => (
+        <text key={d.month} x={x(i)} y={height - 10} textAnchor="middle" fontSize="11" fill="var(--ink-faint)">{d.month}</text>
+      ))}
+      <text x={padL} y={padT - 6} fontSize="11" fill="var(--ink-faint)">{formatRWF(max)}</text>
+    </svg>
+  );
+}
+
+function RevenueDashboard({ onSignOut }) {
+  const first = REVENUE_HISTORY[0].value;
+  const last = REVENUE_HISTORY[REVENUE_HISTORY.length - 1].value;
+  const growth = Math.round(((last - first) / first) * 100);
+  const total = REVENUE_HISTORY.reduce((sum, d) => sum + d.value, 0);
+  const avgMonthly = Math.round(total / REVENUE_HISTORY.length);
+
+  const [cases, setCases] = useState(null);
+  const [loadError, setLoadError] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+    sb.from('cases')
+      .select('reference, full_name, service, province, district, status, submitted_at')
+      .order('submitted_at', { ascending: false })
+      .limit(200)
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error) setLoadError(error.message || 'Could not load cases.');
+        else setCases(data || []);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  const now = new Date();
+  const casesThisMonth = cases ? cases.filter((c) => {
+    const d = new Date(c.submitted_at);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  }).length : null;
+
+  const byService = {};
+  (cases || []).forEach((c) => { byService[c.service] = (byService[c.service] || 0) + 1; });
+  const topServices = Object.entries(byService).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+  return (
+    <main className="dash-page">
+      <div className="dash-header">
+        <div className="dash-header-top">
+          <div className="section-label">OWNER DASHBOARD</div>
+          <button type="button" className="signout-button" onClick={onSignOut}>Sign out</button>
+        </div>
+        <h2>How the platform earns, and how it's growing</h2>
+        <p className="section-description">
+          Figures below are illustrative projections, not real transactions — no payment system is
+          connected yet. They're here to show the intended business model and what growth could look
+          like once monetization is switched on.
+        </p>
+      </div>
+
+      <div className="dash-stats">
+        <div className="stat-card">
+          <span>This month (Dec)</span>
+          <strong>{formatRWF(last)}</strong>
+        </div>
+        <div className="stat-card highlight">
+          <span>Growth over 12 months</span>
+          <strong>+{growth}%</strong>
+        </div>
+        <div className="stat-card">
+          <span>Average monthly revenue</span>
+          <strong>{formatRWF(avgMonthly)}</strong>
+        </div>
+        <div className="stat-card">
+          <span>Projected annual total</span>
+          <strong>{formatRWF(total)}</strong>
+        </div>
+      </div>
+
+      <div className="chart-card">
+        <h3>Monthly revenue trend</h3>
+        <RevenueChart data={REVENUE_HISTORY} />
+      </div>
+
+      <div className="dash-section-label">LIVE ACTIVITY</div>
+      <h3 className="dash-subheading">Real case submissions</h3>
+      <p className="section-description" style={{ marginBottom: 20 }}>
+        This part is real — pulled straight from your Supabase <code>cases</code> table.
+      </p>
+
+      {loadError && (
+        <p className="submit-error" style={{ marginBottom: 24 }}>
+          Couldn't load cases: {loadError}. Make sure you've run the "authenticated can view cases"
+          policy from the setup SQL.
+        </p>
+      )}
+
+      {!loadError && (
+        <>
+          <div className="dash-stats" style={{ marginBottom: 30 }}>
+            <div className="stat-card">
+              <span>Total cases submitted</span>
+              <strong>{cases === null ? '…' : cases.length}</strong>
+            </div>
+            <div className="stat-card highlight">
+              <span>Submitted this month</span>
+              <strong>{casesThisMonth === null ? '…' : casesThisMonth}</strong>
+            </div>
+            <div className="stat-card">
+              <span>Top service</span>
+              <strong className="small-strong">
+                {topServices[0] ? (SERVICES.find((s) => s.id === topServices[0][0])?.title || topServices[0][0]) : '—'}
+              </strong>
+            </div>
+            <div className="stat-card">
+              <span>Under review</span>
+              <strong>{cases === null ? '…' : cases.filter((c) => c.status === 'Under Review').length}</strong>
+            </div>
+          </div>
+
+          <div className="chart-card">
+            <h3>Recent submissions</h3>
+            {cases === null && <p className="section-description">Loading…</p>}
+            {cases && cases.length === 0 && <p className="section-description">No cases submitted yet.</p>}
+            {cases && cases.length > 0 && (
+              <div className="cases-table-wrap">
+                <table className="cases-table">
+                  <thead>
+                    <tr><th>Reference</th><th>Applicant</th><th>Service</th><th>Location</th><th>Status</th><th>Submitted</th></tr>
+                  </thead>
+                  <tbody>
+                    {cases.slice(0, 15).map((c) => {
+                      const service = SERVICES.find((s) => s.id === c.service);
+                      return (
+                        <tr key={c.reference}>
+                          <td>{c.reference}</td>
+                          <td>{c.full_name}</td>
+                          <td>{service ? service.title : c.service}</td>
+                          <td>{[c.district, c.province].filter(Boolean).join(', ')}</td>
+                          <td><span className="status-pill">{c.status}</span></td>
+                          <td>{formatDate(c.submitted_at)}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      <div className="dash-section-label">WHERE IT COMES FROM</div>
+      <h3 className="dash-subheading">Revenue streams</h3>
+      <div className="stream-grid">
+        {REVENUE_STREAMS.map((s) => (
+          <div className="stream-card" key={s.title}>
+            <div className="stream-top">
+              <span className="stream-icon">{s.icon}</span>
+              <span className="stream-share">{s.share}%</span>
+            </div>
+            <h4>{s.title}</h4>
+            <p>{s.desc}</p>
+            <div className="stream-bar"><span style={{ width: `${s.share * 3}%` }}></span></div>
+          </div>
+        ))}
+      </div>
+    </main>
+  );
+}
+
+/* ---------------- App shell ---------------- */
+
+function App() {
+  const [view, setView] = useState('home');
+  const [session, setSession] = useState(undefined); // undefined = checking, null = signed out
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    sb.auth.getSession().then(({ data }) => setSession(data.session ?? null));
+    const { data: sub } = sb.auth.onAuthStateChange((_event, sess) => setSession(sess ?? null));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!session) { setProfile(null); return; }
+    let cancelled = false;
+    fetchProfile(session.user.id)
+      .then((p) => { if (!cancelled) setProfile(p); })
+      .catch(() => { if (!cancelled) setProfile(null); });
+    return () => { cancelled = true; };
+  }, [session]);
+
+  function navigate(next) {
+    setView(next);
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  async function signOutUser() {
+    await sb.auth.signOut();
+    navigate('home');
+  }
+
+  let page;
+  if (view === 'home') page = <Home onNavigate={navigate} />;
+  else if (view === 'wizard') page = <AuthGate session={session} profile={profile}><SubmitCase onNavigate={navigate} /></AuthGate>;
+  else if (view === 'account') page = session
+    ? <main className="wizard-page"><div className="wizard-card login-card" style={{ textAlign: 'center' }}><h2>You're signed in</h2><p className="step-intro">{session.user.email || session.user.phone}</p><button type="button" className="btn-secondary" onClick={signOutUser}>Sign out</button></div></main>
+    : <AuthForm />;
+  else page = <AuthGate session={session} profile={profile} requireAdmin><RevenueDashboard onSignOut={signOutUser} /></AuthGate>;
+
+  return (
+    <div className="app-wrap">
+      <Navbar onNavigate={navigate} session={session} onSignOut={signOutUser} />
+      {page}
+      <Footer onNavigate={navigate} />
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>
