@@ -1056,9 +1056,7 @@ function SubmitCase({ onNavigate }) {
 /* ---------------- Sign in / sign up + access gate ---------------- */
 
 function AuthForm({ notice: initialNotice }) {
-  const [mode, setMode] = useState('signin'); // signin | signup | verify | emailSent
-  const [method, setMethod] = useState('email'); // email confirmation link or SMS OTP
-  const [pendingMethod, setPendingMethod] = useState('email');
+  const [mode, setMode] = useState('signin'); // signin | signup | verify
   const [pendingContact, setPendingContact] = useState('');
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
@@ -1088,16 +1086,16 @@ function AuthForm({ notice: initialNotice }) {
     try {
       if (mode === 'verify') {
         const cleanCode = otp.trim();
-        if (!/^\d{6,10}$/.test(cleanCode)) {
-          throw new Error('Enter the numeric verification code from your SMS.');
+        if (!/^\d{6}$/.test(cleanCode)) {
+          throw new Error('Enter the 6-digit verification code sent to your email.');
         }
         const result = await sb.auth.verifyOtp({
-          phone: pendingContact,
+          email: pendingContact,
           token: cleanCode,
-          type: 'sms'
+          type: 'email'
         });
         if (result.error) throw result.error;
-        setNotice('Your phone number has been verified.');
+        setNotice('Your email address has been verified.');
         setOtp('');
         return;
       }
@@ -1114,51 +1112,32 @@ function AuthForm({ notice: initialNotice }) {
       }
 
       const normalizedPhone = normalizePhoneNumber(phone);
-      const chosenContact = method === 'email' ? email.trim().toLowerCase() : normalizedPhone;
+      const chosenContact = email.trim().toLowerCase();
       if (!fullName.trim()) throw new Error('Enter your full name.');
       if (!/^\+\d{8,15}$/.test(normalizedPhone)) {
         throw new Error('Enter a valid phone number with country code, for example +25078XXXXXXX.');
       }
+      if (!chosenContact) throw new Error('Enter the email address where you want to receive the verification code.');
 
-      let signup;
-      if (method === 'email') {
-        if (!email.trim()) throw new Error('Enter the email address where you want to receive the confirmation link.');
-        signup = await sb.auth.signUp({
-          email: chosenContact,
-          password,
-          options: {
-            data: { full_name: fullName.trim(), phone: normalizedPhone },
-            emailRedirectTo: window.location.href.split('?')[0],
-          },
-        });
-      } else {
-        signup = await sb.auth.signUp({
-          phone: chosenContact,
-          password,
-          options: {
-            data: { full_name: fullName.trim(), phone: normalizedPhone, email: email.trim().toLowerCase() || null },
-          },
-        });
-      }
+      const signup = await sb.auth.signUp({
+        email: chosenContact,
+        password,
+        options: {
+          data: { full_name: fullName.trim(), phone: normalizedPhone },
+          emailRedirectTo: window.location.href.split('?')[0],
+        },
+      });
       if (signup.error) throw signup.error;
 
       if (signup.data && signup.data.session) {
         await sb.auth.signOut();
-        throw new Error(method === 'email'
-          ? 'Email confirmation is currently disabled in Supabase. Enable Confirm email before using verified account signup.'
-          : 'Phone confirmation is currently disabled or SMS delivery is not configured. Enable phone confirmation and configure an SMS provider first.');
+        throw new Error('Email confirmation is currently disabled in Supabase. Enable Confirm email before using verified account signup.');
       }
 
-      setPendingMethod(method);
       setPendingContact(chosenContact);
       setOtp('');
-      if (method === 'email') {
-        setMode('emailSent');
-        setNotice('Signup request accepted. Open the confirmation link sent by Supabase to finish creating your account.');
-      } else {
-        setMode('verify');
-        setNotice('We requested an SMS verification code for ' + chosenContact + '. Enter the code from the text message.');
-      }
+      setMode('verify');
+      setNotice('We requested an email verification code for ' + chosenContact + '. Enter the 6-digit code sent to your email address.');
     } catch (err) {
       setError(err?.message || 'Something went wrong. Please try again.');
     } finally {
@@ -1171,19 +1150,15 @@ function AuthForm({ notice: initialNotice }) {
     setError('');
     setNotice('');
     try {
-      const result = pendingMethod === 'phone'
-        ? await sb.auth.resend({ type: 'sms', phone: pendingContact })
-        : await sb.auth.resend({
-            type: 'signup',
-            email: pendingContact,
-            options: { emailRedirectTo: window.location.href.split('?')[0] },
-          });
+      const result = await sb.auth.resend({
+        type: 'signup',
+        email: pendingContact,
+        options: { emailRedirectTo: window.location.href.split('?')[0] },
+      });
       if (result.error) throw result.error;
-      setNotice(pendingMethod === 'phone'
-        ? 'A new SMS verification code has been requested for ' + pendingContact + '.'
-        : 'A new confirmation email has been requested for ' + pendingContact + '.');
+      setNotice('A new email verification code has been requested for ' + pendingContact + '. Check your inbox and spam folder.');
     } catch (err) {
-      setError(err?.message || 'Unable to resend right now. Please wait and try again.');
+      setError(err?.message || 'Unable to resend the code right now. Please wait and try again.');
     } finally {
       setLoading(false);
     }
@@ -1191,48 +1166,36 @@ function AuthForm({ notice: initialNotice }) {
 
   const isVerifying = mode === 'verify';
   const isSigningUp = mode === 'signup';
-  const isEmailLinkPending = mode === 'emailSent';
 
   return (
     <main className="wizard-page">
       <form className="wizard-card login-card" onSubmit={handleSubmit}>
         <div className="section-label">
-          {isVerifying ? 'VERIFY YOUR PHONE' : isEmailLinkPending ? 'CHECK YOUR EMAIL' : isSigningUp ? 'CREATE AN ACCOUNT' : 'SIGN IN'}
+          {isVerifying ? 'VERIFY YOUR EMAIL' : isSigningUp ? 'CREATE AN ACCOUNT' : 'SIGN IN'}
         </div>
-        <h2>{isVerifying ? 'Enter your SMS code' : isEmailLinkPending ? 'Confirm your email address' : isSigningUp ? 'Create your account' : 'Welcome back'}</h2>
+        <h2>{isVerifying ? 'Enter your email verification code' : isSigningUp ? 'Create your account' : 'Welcome back'}</h2>
         <p className="step-intro">
           {isVerifying
-            ? 'Enter the one-time code sent by SMS to ' + pendingContact + '. Do not share it with anyone.'
-            : isEmailLinkPending
-              ? 'Open the confirmation link sent to ' + pendingContact + ' to activate your account. After confirming, return to this site and sign in.'
-              : isSigningUp
-                ? 'Create an account to submit and track your cases. Email uses a confirmation link; SMS codes require an SMS provider to be configured.'
-                : 'Sign in to submit or track a case, or view the owner dashboard if your account has admin access.'}
+            ? 'Enter the 6-digit code sent to ' + pendingContact + '. Do not share this code with anyone.'
+            : isSigningUp
+              ? 'Create an account to submit and track your cases. We will send a numeric verification code to your email address.'
+              : 'Sign in to submit or track a case, or view the owner dashboard if your account has admin access.'}
         </p>
 
         {notice && <p className="tracker-message" role="status" style={{ marginBottom: 16 }}>{notice}</p>}
 
-        {isEmailLinkPending ? (
-          <>
-            <p className="step-intro">If no message arrives, check your spam folder. With Supabase default email delivery, only authorized addresses in your project organization can receive messages; public users will require custom SMTP.</p>
-            {error && <span className="field-error" role="alert">{error}</span>}
-            <div className="wizard-actions">
-              <button type="button" className="btn-secondary" disabled={loading} onClick={() => { setMode('signin'); setError(''); setNotice(''); }}>Back to sign in</button>
-              <button type="button" className="btn-primary" disabled={loading} onClick={resendCode}>{loading ? 'Please wait…' : 'Resend confirmation email'}</button>
-            </div>
-          </>
-        ) : isVerifying ? (
+        {isVerifying ? (
           <>
             <div className="field">
-              <label htmlFor="auth-code">SMS verification code</label>
-              <input id="auth-code" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6,10}" maxLength={10} value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 10))} placeholder="Enter code" required autoFocus />
+              <label htmlFor="auth-code">Email verification code</label>
+              <input id="auth-code" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="Enter 6-digit code" required autoFocus />
             </div>
             {error && <span className="field-error" role="alert">{error}</span>}
             <div className="wizard-actions">
               <button type="button" className="btn-secondary" disabled={loading} onClick={() => { setMode('signup'); setOtp(''); setError(''); setNotice(''); }}>Change details</button>
-              <button type="submit" className="btn-primary" disabled={loading}>{loading ? 'Checking…' : 'Verify SMS code →'}</button>
+              <button type="submit" className="btn-primary" disabled={loading}>{loading ? 'Checking…' : 'Verify email code →'}</button>
             </div>
-            <button type="button" className="btn-secondary" style={{ width: '100%', marginTop: 10 }} disabled={loading} onClick={resendCode}>{loading ? 'Please wait…' : 'Resend SMS code'}</button>
+            <button type="button" className="btn-secondary" style={{ width: '100%', marginTop: 10 }} disabled={loading} onClick={resendCode}>{loading ? 'Please wait…' : 'Resend email verification code'}</button>
           </>
         ) : (
           <>
@@ -1243,20 +1206,13 @@ function AuthForm({ notice: initialNotice }) {
                   <input id="auth-name" value={fullName} onChange={(e) => setFullName(e.target.value)} autoComplete="name" required />
                 </div>
                 <div className="field">
-                  <label htmlFor="auth-method">Verification method</label>
-                  <select id="auth-method" value={method} onChange={(e) => setMethod(e.target.value)}>
-                    <option value="email">Email confirmation link</option>
-                    <option value="phone">SMS text message</option>
-                  </select>
-                  {method === 'phone' && <p className="step-intro" style={{ marginTop: 6 }}>SMS verification requires phone confirmation and an SMS provider configured in Supabase.</p>}
-                </div>
-                <div className="field">
                   <label htmlFor="auth-phone">Phone number</label>
                   <input id="auth-phone" type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="078XXXXXXX or +25078XXXXXXX" required />
                 </div>
                 <div className="field">
-                  <label htmlFor="auth-email">Email address{method === 'phone' ? ' (optional)' : ''}</label>
-                  <input id="auth-email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required={method === 'email'} placeholder={method === 'phone' ? 'Optional contact email' : 'you@example.com'} />
+                  <label htmlFor="auth-email">Email address</label>
+                  <input id="auth-email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" />
+                  <p className="step-intro" style={{ marginTop: 6 }}>A 6-digit verification code will be sent to this email. Make sure Supabase's Confirm sign-up template uses the token variable.</p>
                 </div>
               </>
             )}
