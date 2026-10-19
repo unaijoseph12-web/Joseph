@@ -1057,6 +1057,8 @@ function SubmitCase({ onNavigate }) {
 
 function AuthForm({ notice: initialNotice }) {
   const [mode, setMode] = useState('signin'); // signin | signup | verify
+  const [method, setMethod] = useState('email'); // email OTP or SMS OTP
+  const [pendingMethod, setPendingMethod] = useState('email');
   const [pendingContact, setPendingContact] = useState('');
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
@@ -1071,6 +1073,7 @@ function AuthForm({ notice: initialNotice }) {
   function normalizePhoneNumber(value) {
     const compact = String(value || '').trim().replace(/[()\s.-]/g, '');
     const digits = compact.replace(/\D/g, '');
+    if (!digits) return '';
     if (compact.startsWith('+')) return '+' + digits;
     if (digits.startsWith('00')) return '+' + digits.slice(2);
     if (digits.startsWith('250')) return '+' + digits;
@@ -1087,15 +1090,15 @@ function AuthForm({ notice: initialNotice }) {
       if (mode === 'verify') {
         const cleanCode = otp.trim();
         if (!/^\d{6}$/.test(cleanCode)) {
-          throw new Error('Enter the 6-digit verification code sent to your email.');
+          throw new Error('Enter the 6-digit verification code you received.');
         }
-        const result = await sb.auth.verifyOtp({
-          email: pendingContact,
-          token: cleanCode,
-          type: 'email'
-        });
+        const result = pendingMethod === 'phone'
+          ? await sb.auth.verifyOtp({ phone: pendingContact, token: cleanCode, type: 'sms' })
+          : await sb.auth.verifyOtp({ email: pendingContact, token: cleanCode, type: 'email' });
         if (result.error) throw result.error;
-        setNotice('Your email address has been verified.');
+        setNotice(pendingMethod === 'phone'
+          ? 'Your phone number has been verified.'
+          : 'Your email address has been verified.');
         setOtp('');
         return;
       }
@@ -1104,7 +1107,7 @@ function AuthForm({ notice: initialNotice }) {
         const contact = identifier.trim();
         if (!contact) throw new Error('Enter your email address or phone number.');
         const credentials = contact.includes('@')
-          ? { email: contact, password }
+          ? { email: contact.toLowerCase(), password }
           : { phone: normalizePhoneNumber(contact), password };
         const { error: signInError } = await sb.auth.signInWithPassword(credentials);
         if (signInError) throw signInError;
@@ -1112,32 +1115,50 @@ function AuthForm({ notice: initialNotice }) {
       }
 
       const normalizedPhone = normalizePhoneNumber(phone);
-      const chosenContact = email.trim().toLowerCase();
+      const chosenEmail = email.trim().toLowerCase();
       if (!fullName.trim()) throw new Error('Enter your full name.');
-      if (!/^\+\d{8,15}$/.test(normalizedPhone)) {
+      if (method === 'email' && !chosenEmail) throw new Error('Enter the email address where you want to receive the code.');
+      if (method === 'phone' && !/^\+\d{8,15}$/.test(normalizedPhone)) {
         throw new Error('Enter a valid phone number with country code, for example +25078XXXXXXX.');
       }
-      if (!chosenContact) throw new Error('Enter the email address where you want to receive the verification code.');
 
-      const signup = await sb.auth.signUp({
-        email: chosenContact,
-        password,
-        options: {
-          data: { full_name: fullName.trim(), phone: normalizedPhone },
-          emailRedirectTo: window.location.href.split('?')[0],
-        },
-      });
+      const chosenContact = method === 'email' ? chosenEmail : normalizedPhone;
+      const options = {
+        data: { full_name: fullName.trim(), phone: normalizedPhone || null, email: chosenEmail || null }
+      };
+      let signup;
+      if (method === 'email') {
+        signup = await sb.auth.signUp({
+          email: chosenEmail,
+          password,
+          options: {
+            ...options,
+            emailRedirectTo: window.location.href.split('?')[0],
+          },
+        });
+      } else {
+        signup = await sb.auth.signUp({
+          phone: normalizedPhone,
+          password,
+          options,
+        });
+      }
       if (signup.error) throw signup.error;
 
       if (signup.data && signup.data.session) {
         await sb.auth.signOut();
-        throw new Error('Email confirmation is currently disabled in Supabase. Enable Confirm email before using verified account signup.');
+        throw new Error(method === 'email'
+          ? 'Supabase returned a session without requiring email confirmation. Enable Confirm email in Supabase before using verified email signup.'
+          : 'Supabase returned a session without requiring phone confirmation. Enable phone confirmation in Supabase and configure an SMS provider first.');
       }
 
+      setPendingMethod(method);
       setPendingContact(chosenContact);
       setOtp('');
       setMode('verify');
-      setNotice('We requested an email verification code for ' + chosenContact + '. Enter the 6-digit code sent to your email address.');
+      setNotice(method === 'email'
+        ? 'We requested an email verification code for ' + chosenContact + '. Check your inbox and spam folder.'
+        : 'We requested an SMS verification code for ' + chosenContact + '. Check your text messages.');
     } catch (err) {
       setError(err?.message || 'Something went wrong. Please try again.');
     } finally {
@@ -1150,13 +1171,17 @@ function AuthForm({ notice: initialNotice }) {
     setError('');
     setNotice('');
     try {
-      const result = await sb.auth.resend({
-        type: 'signup',
-        email: pendingContact,
-        options: { emailRedirectTo: window.location.href.split('?')[0] },
-      });
+      const result = pendingMethod === 'phone'
+        ? await sb.auth.resend({ type: 'sms', phone: pendingContact })
+        : await sb.auth.resend({
+            type: 'signup',
+            email: pendingContact,
+            options: { emailRedirectTo: window.location.href.split('?')[0] },
+          });
       if (result.error) throw result.error;
-      setNotice('A new email verification code has been requested for ' + pendingContact + '. Check your inbox and spam folder.');
+      setNotice(pendingMethod === 'phone'
+        ? 'A new SMS verification code has been requested for ' + pendingContact + '.'
+        : 'A new email verification code has been requested for ' + pendingContact + '.');
     } catch (err) {
       setError(err?.message || 'Unable to resend the code right now. Please wait and try again.');
     } finally {
@@ -1171,14 +1196,14 @@ function AuthForm({ notice: initialNotice }) {
     <main className="wizard-page">
       <form className="wizard-card login-card" onSubmit={handleSubmit}>
         <div className="section-label">
-          {isVerifying ? 'VERIFY YOUR EMAIL' : isSigningUp ? 'CREATE AN ACCOUNT' : 'SIGN IN'}
+          {isVerifying ? (pendingMethod === 'phone' ? 'VERIFY YOUR PHONE' : 'VERIFY YOUR EMAIL') : isSigningUp ? 'CREATE AN ACCOUNT' : 'SIGN IN'}
         </div>
-        <h2>{isVerifying ? 'Enter your email verification code' : isSigningUp ? 'Create your account' : 'Welcome back'}</h2>
+        <h2>{isVerifying ? (pendingMethod === 'phone' ? 'Enter your SMS code' : 'Enter your email verification code') : isSigningUp ? 'Create your account' : 'Welcome back'}</h2>
         <p className="step-intro">
           {isVerifying
             ? 'Enter the 6-digit code sent to ' + pendingContact + '. Do not share this code with anyone.'
             : isSigningUp
-              ? 'Create an account to submit and track your cases. We will send a numeric verification code to your email address.'
+              ? 'Create an account to submit and track your cases. Choose whether to receive your verification code by email or SMS.'
               : 'Sign in to submit or track a case, or view the owner dashboard if your account has admin access.'}
         </p>
 
@@ -1187,15 +1212,15 @@ function AuthForm({ notice: initialNotice }) {
         {isVerifying ? (
           <>
             <div className="field">
-              <label htmlFor="auth-code">Email verification code</label>
+              <label htmlFor="auth-code">{pendingMethod === 'phone' ? 'SMS verification code' : 'Email verification code'}</label>
               <input id="auth-code" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="Enter 6-digit code" required autoFocus />
             </div>
             {error && <span className="field-error" role="alert">{error}</span>}
             <div className="wizard-actions">
               <button type="button" className="btn-secondary" disabled={loading} onClick={() => { setMode('signup'); setOtp(''); setError(''); setNotice(''); }}>Change details</button>
-              <button type="submit" className="btn-primary" disabled={loading}>{loading ? 'Checking…' : 'Verify email code →'}</button>
+              <button type="submit" className="btn-primary" disabled={loading}>{loading ? 'Checking…' : 'Verify code →'}</button>
             </div>
-            <button type="button" className="btn-secondary" style={{ width: '100%', marginTop: 10 }} disabled={loading} onClick={resendCode}>{loading ? 'Please wait…' : 'Resend email verification code'}</button>
+            <button type="button" className="btn-secondary" style={{ width: '100%', marginTop: 10 }} disabled={loading} onClick={resendCode}>{loading ? 'Please wait…' : pendingMethod === 'phone' ? 'Resend SMS code' : 'Resend email code'}</button>
           </>
         ) : (
           <>
@@ -1206,13 +1231,22 @@ function AuthForm({ notice: initialNotice }) {
                   <input id="auth-name" value={fullName} onChange={(e) => setFullName(e.target.value)} autoComplete="name" required />
                 </div>
                 <div className="field">
-                  <label htmlFor="auth-phone">Phone number</label>
-                  <input id="auth-phone" type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="078XXXXXXX or +25078XXXXXXX" required />
+                  <label htmlFor="auth-method">Receive verification code by</label>
+                  <select id="auth-method" value={method} onChange={(e) => { setMethod(e.target.value); setError(''); }} >
+                    <option value="email">Email code</option>
+                    <option value="phone">SMS text message</option>
+                  </select>
+                  {method === 'email'
+                    ? <p className="step-intro" style={{ marginTop: 6 }}>Email code delivery requires Supabase's Confirm sign-up template to contain {{ .Token }} and working email delivery (custom SMTP for public users).</p>
+                    : <p className="step-intro" style={{ marginTop: 6 }}>SMS code delivery requires phone confirmation enabled and an SMS provider configured in Supabase.</p>}
                 </div>
                 <div className="field">
-                  <label htmlFor="auth-email">Email address</label>
-                  <input id="auth-email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" />
-                  <p className="step-intro" style={{ marginTop: 6 }}>A 6-digit verification code will be sent to this email. Make sure Supabase's Confirm sign-up template uses the token variable.</p>
+                  <label htmlFor="auth-email">Email address{method === 'phone' ? ' (optional)' : ''}</label>
+                  <input id="auth-email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required={method === 'email'} placeholder="you@example.com" />
+                </div>
+                <div className="field">
+                  <label htmlFor="auth-phone">Phone number{method === 'phone' ? '' : ' (optional)'}</label>
+                  <input id="auth-phone" type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required={method === 'phone'} placeholder="078XXXXXXX or +25078XXXXXXX" />
                 </div>
               </>
             )}
@@ -1234,7 +1268,7 @@ function AuthForm({ notice: initialNotice }) {
                 {isSigningUp ? 'Have an account? Sign in' : 'Create an account'}
               </button>
               <button type="submit" className="btn-primary" disabled={loading}>
-                {loading ? 'Please wait…' : isSigningUp ? 'Create account →' : 'Sign in →'}
+                {loading ? 'Please wait…' : isSigningUp ? 'Send verification code →' : 'Sign in →'}
               </button>
             </div>
           </>
