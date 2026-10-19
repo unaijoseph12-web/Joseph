@@ -1237,7 +1237,7 @@ function AuthForm({ notice: initialNotice }) {
                     <option value="phone">SMS text message</option>
                   </select>
                   {method === 'email'
-                    ? <p className="step-intro" style={{ marginTop: 6 }}>Email code delivery requires Supabase's Confirm sign-up template to contain {{ .Token }} and working email delivery (custom SMTP for public users).</p>
+                    ? <p className="step-intro" style={{ marginTop: 6 }}>Email code delivery requires the Supabase Confirm sign-up email template to be configured for numeric codes and working email delivery (custom SMTP for public users).</p>
                     : <p className="step-intro" style={{ marginTop: 6 }}>SMS code delivery requires phone confirmation enabled and an SMS provider configured in Supabase.</p>}
                 </div>
                 <div className="field">
