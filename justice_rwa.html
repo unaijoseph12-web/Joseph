@@ -1514,7 +1514,7 @@ function RevenueDashboard({ onSignOut }) {
 /* ---------------- App shell ---------------- */
 
 /* ---------------- Citizen dashboard ---------------- */
-function CitizenDashboard({ session, onSignOut }) {
+function CitizenDashboard({ session, onSignOut, onNavigate }) {
   const [cases, setCases] = useState(null);
   const [loadError, setLoadError] = useState('');
 
@@ -1551,7 +1551,7 @@ function CitizenDashboard({ session, onSignOut }) {
         </div>
         <h2>My Justice Dashboard</h2>
         <p className="section-description">Welcome{session?.user?.email ? ', ' + session.user.email : ''}. View and follow the cases you have submitted. Other citizens' cases are not shown here.</p>
-        <button type="button" className="btn-primary" onClick={() => { window.location.hash = 'submit-case'; }}>Submit a case</button>
+        <button type="button" className="btn-primary" onClick={() => onNavigate('wizard')}>Submit a case</button>
       </div>
       <div className="dash-stats">
         <div className="stat-card"><span>My cases</span><strong>{cases === null ? '…' : rows.length}</strong></div>
@@ -1606,7 +1606,7 @@ function App() {
   else if (view === 'account') page = session
     ? <main className="wizard-page"><div className="wizard-card login-card" style={{ textAlign: 'center' }}><h2>You're signed in</h2><p className="step-intro">{session.user.email || session.user.phone}</p><button type="button" className="btn-secondary" onClick={signOutUser}>Sign out</button></div></main>
     : <AuthForm />;
-  else if (view === 'dashboard') page = !session ? <AuthForm /> : profile?.role === 'admin' ? <AuthGate session={session} profile={profile} requireAdmin><RevenueDashboard onSignOut={signOutUser} /></AuthGate> : <CitizenDashboard session={session} onSignOut={signOutUser} />;
+  else if (view === 'dashboard') page = !session ? <AuthForm /> : profile?.role === 'admin' ? <AuthGate session={session} profile={profile} requireAdmin><RevenueDashboard onSignOut={signOutUser} /></AuthGate> : <CitizenDashboard session={session} onSignOut={signOutUser} onNavigate={navigate} />;
   else page = <Home onNavigate={navigate} />;
 
   return (
