@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RWANDA JUSTICE | Dashboards</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{font-family:Inter,Arial,sans-serif;color:#172c30;background:#f4f8f7;--teal:#0b555b;--line:#dce7e5;--muted:#617477}
+*{box-sizing:border-box}body{margin:0}header{background:#fff;border-bottom:1px solid var(--line);padding:18px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px}header strong{color:var(--teal);letter-spacing:.04em}.wrap{max-width:1050px;margin:36px auto;padding:0 18px}.panel,.stat,.case{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:0 8px 28px #1233}.auth{max-width:470px;margin:55px auto}.eyebrow{font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--teal)}h1{font-size:clamp(28px,4vw,40px);margin:9px 0 12px}p{line-height:1.55;color:var(--muted)}label{display:block;font-weight:700;margin:18px 0 7px}input{width:100%;padding:13px;border:1px solid #b9ccca;border-radius:9px;font-size:16px}button,.linkbtn{border:0;background:var(--teal);color:white;padding:12px 16px;border-radius:9px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}button.secondary{background:#e8f1ef;color:var(--teal)}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.error{color:#a12424;min-height:22px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:20px 0}.stat b{display:block;font-size:30px;margin-top:10px}.case{margin:12px 0;padding:16px}.hidden{display:none!important}.tag{display:inline-block;background:#e8f1ef;color:var(--teal);border-radius:30px;padding:5px 9px;font-size:12px;font-weight:700}.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}footer{text-align:center;color:var(--muted);padding:28px;font-size:13px}
+</style>
+</head>
+<body>
+<header><strong>⚖ RWANDA JUSTICE</strong><span id="headerLabel">Secure access portal</span></header>
+<main class="wrap">
+<section id="login" class="panel auth">
+<div class="eyebrow">SECURE SIGN IN</div><h1>Welcome back</h1>
+<p>Sign in to continue. Your account role determines which dashboard you can access.</p>
+<form id="loginForm">
+<label for="email">Email or phone number</label><input id="email" type="text" autocomplete="username" required placeholder="Email address">
+<label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required placeholder="Your password">
+<div id="loginError" class="error" role="alert"></div>
+<button type="submit" style="width:100%">Sign in securely</button>
+</form>
+<p style="font-size:13px">Admin access is not chosen on this screen. It is granted by the protected role in your account profile.</p>
+</section>
+
+<section id="loading" class="panel hidden"><h1>Checking your account…</h1><p>Please wait while we verify your sign-in and account role.</p></section>
+
+<section id="adminView" class="hidden">
+<div class="sectionhead"><div><div class="eyebrow">OWNER / ADMIN BRANCH</div><h1>Owner Dashboard</h1><p>Manage case workflow and review platform activity.</p></div><button class="secondary" onclick="signOut()">Sign out</button></div>
+<div class="grid"><div class="stat">All cases<b id="allCases">—</b></div><div class="stat">Under review<b id="reviewCases">—</b></div><div class="stat">In progress<b id="progressCases">—</b></div><div class="stat">Resolved<b id="resolvedCases">—</b></div></div>
+<div class="panel"><h2>Recent cases</h2><p>Only records permitted by your Supabase row-level security policies will appear.</p><div id="adminCases"></div></div>
+</section>
+
+<section id="userView" class="hidden">
+<div class="sectionhead"><div><div class="eyebrow">CITIZEN / USER BRANCH</div><h1>My Justice Dashboard</h1><p>Track your own submitted cases and account activity.</p></div><button class="secondary" onclick="signOut()">Sign out</button></div>
+<div class="grid"><div class="stat">My submitted cases<b id="myCasesCount">—</b></div><div class="stat">Under review<b id="myReviewCount">—</b></div><div class="stat">Resolved<b id="myResolvedCount">—</b></div></div>
+<div class="panel"><div class="sectionhead"><h2>My cases</h2><span class="tag">Private to your account</span></div><div id="myCases"></div><div class="actions"><a class="linkbtn" href="justice_rwa.html">Go to RWANDA JUSTICE home</a></div></div>
+</section>
+</main>
+<footer>RWANDA JUSTICE · Secure role-based access · Never share your password or verification code.</footer>
+<script>
+const SUPABASE_URL='https://vlenavlriyktqzwxanxu.supabase.co';
+const SUPABASE_ANON_KEY='sb_publishable_iq3x5A8e9q_fEA7gJN_ytw_i47x387n';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const $=id=>document.getElementById(id);
+function show(id){['login','loading','adminView','userView'].forEach(x=>$(x).classList.toggle('hidden',x!==id));}
+function safe(value){return String(value??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function renderCases(target,rows){$(target).innerHTML=rows.length?rows.map(c=>'<article class="case"><div class="sectionhead"><strong>'+safe(c.reference_number||c.reference||'Case')+'</strong><span class="tag">'+safe(c.status||'Submitted')+'</span></div><p>'+safe(c.category||c.case_type||'Justice service request')+' · '+safe(c.created_at?new Date(c.created_at).toLocaleDateString():'Date unavailable')+'</p></article>').join(''):'<p>No cases are available to display yet.</p>';}
+async function loadDashboard(session){
+ if(!session){show('login');$('headerLabel').textContent='Secure access portal';return;}
+ show('loading');
+ const {data:profile,error:profileError}=await sb.from('profiles').select('role').eq('id',session.user.id).single();
+ if(profileError){show('login');$('loginError').textContent='Could not verify your account role. Please check that your profile exists, then try again.';await sb.auth.signOut();return;}
+ $('headerLabel').textContent=session.user.email||session.user.phone||'Signed in';
+ if(profile?.role==='admin'){
+  show('adminView');
+  const {data,error}=await sb.from('cases').select('*').order('created_at',{ascending:false}).limit(100);
+  if(error){$('adminCases').innerHTML='<p class="error">Could not load cases. Check the admin RLS policies in Supabase.</p>';return;}
+  const rows=data||[]; $('allCases').textContent=rows.length;$('reviewCases').textContent=rows.filter(c=>/under review/i.test(c.status||'')).length;$('progressCases').textContent=rows.filter(c=>/in progress/i.test(c.status||'')).length;$('resolvedCases').textContent=rows.filter(c=>/resolved/i.test(c.status||'')).length;renderCases('adminCases',rows);
+ }else{
+  show('userView');
+  const {data,error}=await sb.from('cases').select('*').eq('user_id',session.user.id).order('created_at',{ascending:false});
+  if(error){$('myCases').innerHTML='<p class="error">Could not load your cases. Check that the cases table has a user_id column and user RLS policy.</p>';return;}
+  const rows=data||[];$('myCasesCount').textContent=rows.length;$('myReviewCount').textContent=rows.filter(c=>/under review/i.test(c.status||'')).length;$('myResolvedCount').textContent=rows.filter(c=>/resolved/i.test(c.status||'')).length;renderCases('myCases',rows);
+ }
+}
+$('loginForm').addEventListener('submit',async e=>{
+ e.preventDefault();$('loginError').textContent='';show('loading');
+ const identity=$('email').value.trim(),password=$('password').value;
+ const credentials=identity.includes('@')?{email:identity,password}:{phone:identity,password};
+ const {error}=await sb.auth.signInWithPassword(credentials);
+ if(error){show('login');$('loginError').textContent='Sign-in failed. Check your details, and confirm the account is registered in Supabase.';return;}
+ const {data}=await sb.auth.getSession();await loadDashboard(data.session);
+});
+async function signOut(){await sb.auth.signOut();show('login');$('password').value='';$('loginError').textContent='';}
+sb.auth.onAuthStateChange((_event,session)=>{if(session)loadDashboard(session);});
+sb.auth.getSession().then(({data})=>{if(data.session)loadDashboard(data.session);});
+</script>
+</body></html>
