@@ -1513,6 +1513,63 @@ function RevenueDashboard({ onSignOut }) {
 
 /* ---------------- App shell ---------------- */
 
+/* ---------------- Citizen dashboard ---------------- */
+function CitizenDashboard({ session, onSignOut }) {
+  const [cases, setCases] = useState(null);
+  const [loadError, setLoadError] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadMyCases() {
+      const { data: authData } = await sb.auth.getUser();
+      const user = authData && authData.user;
+      if (!user) {
+        if (!cancelled) setLoadError('Please sign in to view your cases.');
+        return;
+      }
+      const { data, error } = await sb.from('cases')
+        .select('reference, service, status, submitted_at, user_id')
+        .eq('user_id', user.id)
+        .order('submitted_at', { ascending: false })
+        .limit(100);
+      if (cancelled) return;
+      if (error) setLoadError('Your cases could not be loaded. Check the cases table and its row-level security policies.');
+      else setCases(data || []);
+    }
+    loadMyCases();
+    return () => { cancelled = true; };
+  }, [session]);
+
+  const rows = cases || [];
+  const countStatus = (status) => rows.filter(c => String(c.status || '').toLowerCase() === status).length;
+  return (
+    <main className="dash-page">
+      <div className="dash-header">
+        <div className="dash-header-top">
+          <div className="section-label">CITIZEN DASHBOARD</div>
+          <button type="button" className="signout-button" onClick={onSignOut}>Sign out</button>
+        </div>
+        <h2>My Justice Dashboard</h2>
+        <p className="section-description">Welcome{session?.user?.email ? ', ' + session.user.email : ''}. View and follow the cases you have submitted. Other citizens' cases are not shown here.</p>
+        <button type="button" className="btn-primary" onClick={() => { window.location.hash = 'submit-case'; }}>Submit a case</button>
+      </div>
+      <div className="dash-stats">
+        <div className="stat-card"><span>My cases</span><strong>{cases === null ? '…' : rows.length}</strong></div>
+        <div className="stat-card"><span>Under review</span><strong>{cases === null ? '…' : countStatus('under review')}</strong></div>
+        <div className="stat-card"><span>In progress</span><strong>{cases === null ? '…' : countStatus('in progress')}</strong></div>
+        <div className="stat-card"><span>Resolved</span><strong>{cases === null ? '…' : countStatus('resolved')}</strong></div>
+      </div>
+      <section className="dash-section">
+        <h3>My submitted cases</h3>
+        {loadError ? <p className="field-error">{loadError}</p> : cases === null ? <p>Loading your cases…</p> :
+          rows.length === 0 ? <p>You have no submitted cases yet. When you submit a case while signed in, it will appear here.</p> :
+          <div className="table-wrap"><table><thead><tr><th>Reference</th><th>Service</th><th>Status</th><th>Submitted</th></tr></thead>
+            <tbody>{rows.map((c, i) => <tr key={c.reference || i}><td>{c.reference || '—'}</td><td>{c.service || 'Justice service'}</td><td>{c.status || 'Under Review'}</td><td>{c.submitted_at ? formatDate(c.submitted_at) : '—'}</td></tr>)}</tbody></table></div>}
+      </section>
+    </main>
+  );
+}
+
 function App() {
   const [view, setView] = useState('home');
   const [session, setSession] = useState(undefined); // undefined = checking, null = signed out
@@ -1549,7 +1606,8 @@ function App() {
   else if (view === 'account') page = session
     ? <main className="wizard-page"><div className="wizard-card login-card" style={{ textAlign: 'center' }}><h2>You're signed in</h2><p className="step-intro">{session.user.email || session.user.phone}</p><button type="button" className="btn-secondary" onClick={signOutUser}>Sign out</button></div></main>
     : <AuthForm />;
-  else page = <AuthGate session={session} profile={profile} requireAdmin><RevenueDashboard onSignOut={signOutUser} /></AuthGate>;
+  else if (view === 'dashboard') page = !session ? <AuthForm /> : profile?.role === 'admin' ? <AuthGate session={session} profile={profile} requireAdmin><RevenueDashboard onSignOut={signOutUser} /></AuthGate> : <CitizenDashboard session={session} onSignOut={signOutUser} />;
+  else page = <Home onNavigate={navigate} />;
 
   return (
     <div className="app-wrap">
