@@ -126,6 +126,21 @@
   @media (max-width: 900px) { .steps { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 600px) { .steps { grid-template-columns: 1fr; } }
 
+
+  /* Revenue and payment information */
+  .revenue-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-top:28px; }
+  .revenue-card { border:1px solid var(--line); border-radius:var(--radius-md); padding:22px; background:var(--paper); }
+  .revenue-card strong { display:block; font-size:24px; color:var(--teal-800); font-family:var(--font-display); margin:8px 0; }
+  .revenue-card p { color:var(--ink-soft); font-size:13px; line-height:1.55; }
+  .payment-chips { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+  .payment-chip { border:1px solid var(--line); border-radius:999px; padding:9px 13px; background:var(--paper); font-size:13px; font-weight:600; }
+  .revenue-note { margin-top:22px; padding:16px 18px; background:var(--amber-100); border-radius:12px; font-size:13px; line-height:1.6; }
+  .revenue-calculator { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:24px; padding:22px; border:1px solid var(--line); border-radius:var(--radius-md); background:var(--paper); }
+  .revenue-calculator label { display:block; font-size:13px; font-weight:700; margin-bottom:8px; }
+  .revenue-calculator input, .revenue-calculator select { width:100%; }
+  .revenue-result { font-size:24px; font-weight:800; color:var(--teal-800); }
+  @media(max-width:700px){ .revenue-grid,.revenue-calculator{grid-template-columns:1fr;} }
+
   /* Jobs */
   .jobs-section { padding: 75px 8%; display: grid; grid-template-columns: 1fr .7fr; gap: 60px; align-items: center; background: var(--teal-900); color: white; }
   .jobs-section h2 { font-size: 34px; margin: 12px 0 18px; }
@@ -541,6 +556,7 @@ function Footer({ onNavigate }) {
           <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('wizard'); }}>Submit a Case</a>
           <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('home'); }}>Track a Case</a>
           <a href="#jobs" onClick={() => onNavigate('home')}>Jobs &amp; Opportunities</a>
+          <a href="#earnings" onClick={() => onNavigate('home')}>Funding &amp; Payments</a>
         </div>
         <div>
           <h4>Support</h4>
@@ -705,6 +721,60 @@ function AskUnaiBanner() {
   );
 }
 
+
+function RevenuePlan() {
+  const [paidCases, setPaidCases] = useState(1063);
+  const [fee, setFee] = useState(500);
+  const money = (n) => Math.round(n).toLocaleString('en-US');
+  const scenarios = [
+    { label: 'Early adoption · 1%', cases: 1063 },
+    { label: 'Growth · 5%', cases: 5313 },
+    { label: 'Expanded reach · 10%', cases: 10625 },
+  ];
+  return (
+    <section id="earnings" className="section grey">
+      <div className="section-label">SUSTAINABLE OPERATIONS</div>
+      <h2>How RWANDA JUSTICE could be funded</h2>
+      <p className="section-description">A transparent proposal for supporting platform maintenance, digital access and service improvements.</p>
+      <div className="revenue-grid">
+        <div className="revenue-card"><div className="service-icon">🤝</div><h3>Institutional partnerships</h3><p>Potential paid software, maintenance and support agreements with organizations that choose to work with the platform.</p></div>
+        <div className="revenue-card"><div className="service-icon">🌱</div><h3>Grants and sponsorship</h3><p>Seek funding for digital inclusion and access to justice, with no influence over case decisions or confidential case data.</p></div>
+        <div className="revenue-card"><div className="service-icon">🧾</div><h3>Authorized optional services</h3><p>A proposed 500–1,000 RWF fee may be considered only for services legally approved to carry a charge.</p></div>
+      </div>
+      <h3 style={{ marginTop: 34 }}>Illustrative annual revenue calculator</h3>
+      <p className="section-description" style={{ marginTop: 8 }}>Adjust the number of paid submissions and proposed fee to estimate gross revenue.</p>
+      <div className="revenue-calculator">
+        <div>
+          <label htmlFor="paid-cases">Paid submissions per year</label>
+          <input id="paid-cases" type="number" min="0" max="1000000" step="1" value={paidCases} onChange={(e) => setPaidCases(Math.max(0, Math.min(1000000, Number(e.target.value) || 0)))} />
+        </div>
+        <div>
+          <label htmlFor="submission-fee">Proposed fee per eligible service</label>
+          <select id="submission-fee" value={fee} onChange={(e) => setFee(Number(e.target.value))}>
+            <option value="500">500 RWF</option><option value="750">750 RWF</option><option value="1000">1,000 RWF</option>
+          </select>
+        </div>
+        <div>
+          <span className="section-label">ESTIMATED GROSS PER YEAR</span>
+          <div className="revenue-result">{money(paidCases * fee)} RWF</div>
+        </div>
+        <div>
+          <span className="section-label">MONTHLY AVERAGE</span>
+          <div className="revenue-result">{money(paidCases * fee / 12)} RWF</div>
+        </div>
+      </div>
+      <h3 style={{ marginTop: 34 }}>Potential payment methods</h3>
+      <p className="section-description" style={{ marginTop: 8 }}>Payment options to investigate for Rwanda:</p>
+      <div className="payment-chips">
+        <span className="payment-chip">📱 MTN Mobile Money</span>
+        <span className="payment-chip">📱 Airtel Money</span>
+        <span className="payment-chip">💳 Visa / Mastercard</span>
+      </div>
+      <div className="revenue-note"><strong>Important:</strong> Payments are not enabled by this information section. A payment provider, merchant approval, secure server-side payment verification and receipts must be configured before accepting money. Do not charge for official case filing unless the fee is legally authorized. Essential justice information and emergency help should remain accessible without an unapproved fee. Estimates are gross revenue before provider fees, taxes and operating costs.</div>
+    </section>
+  );
+}
+
 function Home({ onNavigate }) {
   return (
     <>
@@ -714,6 +784,7 @@ function Home({ onNavigate }) {
       <HowItWorks />
       <Jobs />
       <AskUnaiBanner />
+      <RevenuePlan />
     </>
   );
 }
