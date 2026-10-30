@@ -1275,7 +1275,7 @@ function AuthForm({ notice: initialNotice }) {
             ? 'Enter the 6-digit code sent to ' + pendingContact + '. Do not share this code with anyone.'
             : isSigningUp
               ? 'Create an account to submit and track your cases. Choose whether to receive your verification code by email or SMS.'
-              : 'Sign in to submit or track a case, or view the owner dashboard if your account has admin access.'}
+              : 'Sign in with your email and password. Owner/Admin accounts use password sign-in and are not asked for a new verification code at every login. The owner account must have its email confirmed and its admin role assigned once in Supabase.'}
         </p>
 
         {notice && <p className="tracker-message" role="status" style={{ marginBottom: 16 }}>{notice}</p>}
@@ -1323,10 +1323,15 @@ function AuthForm({ notice: initialNotice }) {
             )}
 
             {!isSigningUp && (
+              <>
+              <div className="revenue-note" role="note" style={{ marginBottom: 18 }}>
+                <strong>Owner/Admin sign-in:</strong> use your registered email and password. No new verification code is required for each login. If Supabase says your email is not confirmed, complete the one-time email confirmation first; this app does not bypass account verification.
+              </div>
               <div className="field">
                 <label htmlFor="auth-identifier">Email or phone number</label>
                 <input id="auth-identifier" type="text" inputMode="email" autoComplete="username" value={identifier} onChange={(e) => setIdentifier(e.target.value)} placeholder="you@example.com or +25078XXXXXXX" required autoFocus />
               </div>
+              </>
             )}
             <div className="field">
               <label htmlFor="auth-password">Password</label>
