@@ -324,19 +324,39 @@
 <div id="root"></div>
 
 <script>
-  window.addEventListener('load', function () {
-    setTimeout(function () {
+  (function () {
+    function showStartupError(message) {
       var root = document.getElementById('root');
-      if (root && root.innerHTML.trim() === '') {
-        root.innerHTML =
-          '<div style="max-width:520px;margin:80px auto;padding:24px;font-family:sans-serif;' +
-          'border:1px solid #e1e6e5;border-radius:12px;color:#12252b;">' +
-          '<strong>The app failed to load.</strong><p>This usually means one of the CDN scripts ' +
-          '(React, Babel, or Supabase) did not load \u2014 check your internet connection, or open the ' +
-          'browser console (F12, then the Console tab) and share the red error text.</p></div>';
+      if (!root || root.dataset.appStarted === 'true') return;
+      root.innerHTML =
+        '<div style="max-width:560px;margin:48px auto;padding:24px;font-family:Arial,sans-serif;' +
+        'background:#fff;border:1px solid #d7e2e0;border-radius:14px;color:#173238;line-height:1.5;">' +
+        '<h2 style="margin:0 0 10px;">RWANDA JUSTICE could not start</h2>' +
+        '<p style="margin:0 0 10px;">A required app script failed to load or the app encountered a startup error.</p>' +
+        '<p style="font-size:13px;color:#52666a;overflow-wrap:anywhere;">' +
+        String(message || 'No additional error details were provided.').replace(/[&<>"]/g, function (c) {
+          return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
+        }) +
+        '</p><p style="font-size:13px;">Please send this message to support so the issue can be fixed.</p></div>';
+    }
+    window.addEventListener('error', function (event) {
+      if (event && (event.error || event.message)) {
+        showStartupError(event.message || (event.error && event.error.message));
       }
-    }, 2000);
-  });
+    }, true);
+    window.addEventListener('unhandledrejection', function (event) {
+      var reason = event && event.reason;
+      showStartupError(reason && reason.message ? reason.message : String(reason || 'Startup request failed.'));
+    });
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        var root = document.getElementById('root');
+        if (root && root.innerHTML.trim() === '') {
+          showStartupError('The app did not render. Check the browser Console (F12) for the first red error.');
+        }
+      }, 5000);
+    });
+  })();
 </script>
 
 <script type="text/babel" data-presets="react">
@@ -1354,7 +1374,7 @@ function AuthForm({ notice: initialNotice }) {
   );
 }
 function AuthGate({ session, profile, requireAdmin, children }) {
-  if (session === undefined) return null; // still checking
+  if (session === undefined) return <main className="wizard-page"><div className="wizard-card login-card" role="status">Loading your secure session…</div></main>;
   if (session === null) return <AuthForm />;
   if (requireAdmin && (!profile || profile.role !== 'admin')) {
     return (
@@ -1595,7 +1615,9 @@ function App() {
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
-    sb.auth.getSession().then(({ data }) => setSession(data.session ?? null));
+    sb.auth.getSession()
+      .then(({ data }) => setSession(data.session ?? null))
+      .catch(() => setSession(null));
     const { data: sub } = sb.auth.onAuthStateChange((_event, sess) => setSession(sess ?? null));
     return () => sub.subscription.unsubscribe();
   }, []);
