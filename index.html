@@ -372,6 +372,32 @@
 .jw-tabbar{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
 .jw-tab{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:9px 13px;font-size:12px;cursor:pointer}
 .jw-tab.active{background:var(--teal-800);color:#fff;border-color:var(--teal-800)}
+
+/* Justice 2050 vision gallery */
+.j2050-section{background:linear-gradient(145deg,var(--teal-050),var(--parchment))}
+.j2050-intro{max-width:760px;color:var(--ink-soft);line-height:1.7}
+.j2050-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:30px}
+.j2050-card{overflow:hidden;border:1px solid var(--line);border-radius:18px;background:var(--paper);box-shadow:var(--shadow-card)}
+.j2050-card img{display:block;width:100%;height:185px;object-fit:cover;background:var(--teal-100)}
+.j2050-card-body{padding:18px}
+.j2050-card h3{font-size:19px;margin:0 0 8px}
+.j2050-card p{font-size:13px;line-height:1.65;color:var(--ink-soft)}
+.j2050-tag{display:inline-block;margin-bottom:9px;padding:5px 9px;border-radius:20px;background:var(--teal-100);color:var(--teal-800);font-size:10px;font-weight:800;letter-spacing:.06em}
+.jw-subscription-banner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px;margin:18px 0;border:1px solid var(--line);border-radius:16px;background:linear-gradient(110deg,var(--teal-050),var(--paper))}
+.jw-subscription-banner strong{display:block;font-size:21px;margin:4px 0}
+.jw-subscription-banner p{font-size:12px;color:var(--ink-soft);line-height:1.5}
+.jw-payment-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}
+.jw-payment-metric{padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--teal-050)}
+.jw-payment-metric span{display:block;color:var(--ink-faint);font-size:11px}
+.jw-payment-metric strong{display:block;margin-top:7px;font-size:18px}
+.jw-payment-photo{width:100%;height:190px;object-fit:cover;border-radius:14px;margin:12px 0}
+.jw-payment-methods{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0}
+.jw-payment-method{padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--paper);font-weight:700}
+.jw-payment-method.active{border-color:var(--teal-700);background:var(--teal-100);color:var(--teal-800)}
+.jw-demo-renew{padding:12px 17px;border:0;border-radius:10px;background:var(--teal-800);color:white;font-weight:800}
+.jw-history-row{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:12px}
+@media(max-width:850px){.j2050-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.jw-payment-summary{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.j2050-grid{grid-template-columns:1fr}.jw-subscription-banner{display:block}.jw-subscription-banner button{margin-top:12px}.jw-payment-summary{grid-template-columns:1fr}}
 @media(max-width:850px){.jw-layout{grid-template-columns:1fr}.jw-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.jw-page{padding:28px 4% 60px}.jw-welcome{display:block}.jw-user-chip{display:inline-block;margin-top:14px}.jw-map{min-height:330px;padding:15px}.jw-node{min-width:76px;padding:7px 6px;font-size:10px}.jw-node small{font-size:8px}.jw-stats{gap:8px}.jw-stat{padding:13px}.jw-stat strong{font-size:21px}.jw-panel{padding:16px}}
 
@@ -853,6 +879,31 @@ function RevenuePlan() {
   );
 }
 
+function Justice2050Vision() {
+  const cards = [
+    {tag:'RWANDA 2050',title:'Connected Justice Network',desc:'A future-facing vision for easier access to justice information across Rwanda.',src:'https://images.pexels.com/photos/31466702/pexels-photo-31466702.jpeg?cs=srgb&dl=pexels-faustin-nkurunziza-2151028521-31466702.jpg&fm=jpg',alt:'Modern Kigali skyline',credit:'Kigali city photo · Pexels'},
+    {tag:'HUMAN SUPPORT',title:'Guidance with dignity',desc:'Citizens can prepare questions and understand service pathways before meeting a qualified professional.',src:'https://images.pexels.com/photos/8152740/pexels-photo-8152740.jpeg?cs=srgb&dl=pexels-pavel-danilyuk-8152740.jpg&fm=jpg',alt:'A professional discussing documents with a client',credit:'Legal consultation photo · Pexels'},
+    {tag:'ASK UNAI AI',title:'Multilingual digital guide',desc:'An AI helper can explain platform steps in accessible language, with human review for important decisions.',src:'https://images.pexels.com/photos/30530426/pexels-photo-30530426.jpeg?cs=srgb&dl=pexels-bertellifotografia-30530426.jpg&fm=jpg',alt:'Smartphone showing an AI assistant interface',credit:'AI technology photo · Pexels'},
+    {tag:'VIRTUAL SERVICES',title:'Remote appointments',desc:'A future service model could help people prepare for remote appointments and reduce unnecessary travel.',src:'https://images.pexels.com/photos/8430314/pexels-photo-8430314.jpeg?cs=srgb&dl=pexels-kampus-8430314.jpg&fm=jpg',alt:'People using a laptop for an online consultation',credit:'Virtual consultation photo · Pexels'},
+    {tag:'DIGITAL PAYMENTS',title:'Clear and safe payment choices',desc:'If paid optional services are introduced, payment status should be verified securely by an approved provider.',src:'https://images.pexels.com/photos/7621140/pexels-photo-7621140.jpeg?cs=srgb&dl=pexels-ivan-s-7621140.jpg&fm=jpg',alt:'Hands using a smartphone and payment terminal',credit:'Mobile payment photo · Pexels'},
+    {tag:'PRIVACY FIRST',title:'Trust, security and transparency',desc:'Protect personal information, explain how data is used, and keep essential justice information accessible.',src:null,alt:'',credit:'Illustrative concept'},
+  ];
+  return (
+    <section className="section j2050-section">
+      <div className="section-label">THE FUTURE OF ACCESS TO JUSTICE</div>
+      <h2>RWANDA JUSTICE 2050</h2>
+      <p className="j2050-intro">A long-term vision for a justice experience that is more accessible, understandable, secure and citizen-centred. These are proposed ideas, not a claim that every service is already operational.</p>
+      <div className="j2050-grid">
+        {cards.map((card) => <article className="j2050-card" key={card.title}>
+          {card.src ? <img src={card.src} alt={card.alt} loading="lazy" referrerPolicy="no-referrer" /> : <div style={{height:185,display:'grid',placeItems:'center',background:'linear-gradient(135deg,#0b4f55,#14333c)',color:'#fff',fontSize:54}} aria-hidden="true">🔐</div>}
+          <div className="j2050-card-body"><span className="j2050-tag">{card.tag}</span><h3>{card.title}</h3><p>{card.desc}</p><small style={{display:'block',marginTop:10,color:'var(--ink-faint)',fontSize:10}}>{card.credit}</small></div>
+        </article>)}
+      </div>
+      <p style={{marginTop:18,fontSize:11,color:'var(--ink-faint)'}}>Photo credits: Pexels contributors. Photos are illustrative and do not represent official justice offices or services.</p>
+    </section>
+  );
+}
+
 function Home({ onNavigate }) {
   return (
     <>
@@ -860,6 +911,7 @@ function Home({ onNavigate }) {
       <Stats />
       <Services onNavigate={onNavigate} />
       <HowItWorks />
+      <Justice2050Vision />
       <Jobs />
       <AskUnaiBanner />
       <RevenuePlan />
@@ -1674,7 +1726,43 @@ function UserDashboard({ session, onNavigate, onOpenUnai, onSignOut }) {
   const [tab, setTab] = useState('journey');
   const [appointment, setAppointment] = useState({ service: 'Legal guidance', date: '', time: '', note: '' });
   const [appointmentPrepared, setAppointmentPrepared] = useState(false);
+  const [subscription, setSubscription] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState('MTN Mobile Money');
   const displayName = session?.user?.user_metadata?.full_name || session?.user?.email || 'Citizen';
+
+  // Demonstration-only subscription clock. Browser-local and NOT secure billing.
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    const key = 'rwandaJustice.subscription.demo.' + session.user.id;
+    const created = new Date(session.user.created_at || Date.now());
+    const trialEnds = new Date(created.getTime() + 30 * 24 * 60 * 60 * 1000);
+    let saved = readJSON(key, null);
+    if (!saved) {
+      saved = { trialStartedAt: created.toISOString(), accessUntil: trialEnds.toISOString(), renewals: [] };
+      writeJSON(key, saved);
+    }
+    setSubscription(saved);
+  }, [session?.user?.id]);
+
+  const trialEnd = new Date(new Date(session?.user?.created_at || Date.now()).getTime() + 30 * 24 * 60 * 60 * 1000);
+  const accessEnd = subscription?.accessUntil ? new Date(subscription.accessUntil) : trialEnd;
+  const daysRemaining = Math.max(0, Math.ceil((accessEnd.getTime() - Date.now()) / (24 * 60 * 60 * 1000)));
+  const accessExpired = accessEnd.getTime() <= Date.now();
+
+  function simulateDemoRenewal() {
+    if (!session?.user?.id) return;
+    const key = 'rwandaJustice.subscription.demo.' + session.user.id;
+    const base = Math.max(Date.now(), accessEnd.getTime());
+    const next = new Date(base + 30 * 24 * 60 * 60 * 1000);
+    const updated = {
+      ...(subscription || {}),
+      trialStartedAt: subscription?.trialStartedAt || new Date(session.user.created_at || Date.now()).toISOString(),
+      accessUntil: next.toISOString(),
+      renewals: [{ id: 'DEMO-' + Date.now(), amount: 1000, currency: 'RWF', method: paymentMethod, status: 'DEMO ONLY — NOT PAID', createdAt: new Date().toISOString(), accessUntil: next.toISOString() }, ...((subscription?.renewals) || [])]
+    };
+    writeJSON(key, updated);
+    setSubscription(updated);
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -1711,6 +1799,10 @@ function UserDashboard({ session, onNavigate, onOpenUnai, onSignOut }) {
         <div><div className="jw-eyebrow">YOUR RWANDA JUSTICE WORLD</div><h1>Welcome, {displayName.split('@')[0]}</h1>
           <p>Your justice journey, all in one place. Explore service zones, follow your cases, and get guidance from Ask Unai.</p></div>
         <div><div className="jw-user-chip">👤 Citizen account · Secure session</div><div style={{textAlign:'right',marginTop:9}}><button className="jw-secondary" onClick={onSignOut}>Sign out</button></div></div>
+      </div>
+      <div className="jw-subscription-banner">
+        <div><div className="jw-eyebrow">JUSTICE 2050 · ACCESS STATUS</div><strong>{subscription ? (accessExpired ? 'Demo access period ended' : daysRemaining + ' days remaining') : 'Preparing access details…'}</strong><p>{subscription ? '30-day trial began ' + formatDate(subscription.trialStartedAt) + '. Renewal extends the demo period by another 30 days.' : 'Your account trial is being calculated from its creation date.'}</p></div>
+        <button type="button" className="jw-secondary" onClick={()=>setTab('payments')}>View access & renewal</button>
       </div>
       <div className="jw-stats">
         <div className="jw-stat"><span>My cases</span><strong>{cases === null ? '…' : cases.length}</strong></div>
@@ -1772,14 +1864,26 @@ function UserDashboard({ session, onNavigate, onOpenUnai, onSignOut }) {
         {appointmentPrepared && <div className="jw-note">Request prepared for {appointment.service} on {appointment.date} at {appointment.time}. It has not been sent or confirmed. Contact the relevant office until online booking is activated.</div>}
       </section>}
       {tab==='payments' && <section className="jw-panel">
-        <div className="jw-eyebrow">PAYMENT CENTRE</div><h2>Appointments & service payments</h2>
-        <p className="jw-muted">View payment information before paying. No payment is currently being collected through this dashboard.</p>
-        <div className="jw-actions">
-          <div className="jw-action"><span>📱</span><strong>MTN Mobile Money</strong><small className="jw-muted">Planned secure provider integration</small></div>
-          <div className="jw-action"><span>📱</span><strong>Airtel Money</strong><small className="jw-muted">Planned secure provider integration</small></div>
+        <div className="jw-eyebrow">DEMONSTRATION PAYMENT CENTRE</div><h2>Renew your 30-day access</h2>
+        <p className="jw-muted">The proposed subscription is 1,000 RWF for another 30 days. This screen is a prototype: it does not send money, contact a mobile-money provider or verify a real transaction.</p>
+        <div className="jw-payment-summary">
+          <div className="jw-payment-metric"><span>DEMO SUBSCRIPTION</span><strong>1,000 RWF</strong></div>
+          <div className="jw-payment-metric"><span>ACCESS PERIOD</span><strong>30 more days</strong></div>
+          <div className="jw-payment-metric"><span>CURRENT STATUS</span><strong>{accessExpired ? 'Demo period ended' : daysRemaining + ' days left'}</strong></div>
         </div>
-        <div className="jw-note">⚠️ No payment has been taken. Never enter your MoMo PIN or mobile-money password into this website. Any future payment must be processed by a verified payment provider and confirmed by a secure server callback.</div>
-        <div className="jw-section"><h3>Payment history</h3><p className="jw-muted">No verified transactions are connected yet.</p></div>
+        <img className="jw-payment-photo" src="https://images.pexels.com/photos/7621140/pexels-photo-7621140.jpeg?cs=srgb&dl=pexels-ivan-s-7621140.jpg&fm=jpg" alt="Smartphone and payment terminal representing digital payments" loading="lazy" referrerPolicy="no-referrer" />
+        <h3>Choose a demonstration method</h3>
+        <div className="jw-payment-methods">
+          <button type="button" className={'jw-payment-method '+(paymentMethod==='MTN Mobile Money'?'active':'')} onClick={()=>setPaymentMethod('MTN Mobile Money')}>📱 MTN Mobile Money</button>
+          <button type="button" className={'jw-payment-method '+(paymentMethod==='Airtel Money'?'active':'')} onClick={()=>setPaymentMethod('Airtel Money')}>📱 Airtel Money</button>
+        </div>
+        <div className="jw-note">Proposed payment contact: <strong>0780182309</strong> (not verified or connected to a payment provider). Do not send money using this demonstration screen. Never enter a PIN, password or OTP here.</div>
+        <button type="button" className="jw-demo-renew" onClick={simulateDemoRenewal}>Simulate demo renewal · 1,000 RWF</button>
+        <div className="jw-note">DEMO ONLY: clicking the button adds 30 days to this browser's demonstration timer and creates a clearly labelled demo record. It does not mean that payment was received.</div>
+        <div className="jw-section"><h3>Renewal history</h3>
+          {subscription?.renewals?.length ? subscription.renewals.map(item=><div className="jw-history-row" key={item.id}><span><strong>{item.amount.toLocaleString()} RWF</strong><br/><span className="jw-muted">{item.method} · {formatDate(item.createdAt)}</span></span><span className="jw-pill">DEMO ONLY</span></div>) : <p className="jw-muted">No demonstration renewals yet.</p>}
+        </div>
+        <div className="jw-note">Fair access principle: essential justice information, case reporting and case tracking should remain available without a subscription. A future paid plan should cover optional premium conveniences only.</div>
       </section>}
     </main>
   );
