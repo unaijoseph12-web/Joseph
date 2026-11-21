@@ -588,7 +588,7 @@ function AskUnaiModal({ open, onClose }) {
 
 /* ---------------- Navbar / Footer ---------------- */
 
-function Navbar({ onNavigate, session, onSignOut }) {
+function Navbar({ onNavigate, session, profile, onSignOut }) {
   const [unaiOpen, setUnaiOpen] = useState(false);
   return (
     <>
@@ -601,7 +601,8 @@ function Navbar({ onNavigate, session, onSignOut }) {
           <a href="#services" onClick={() => onNavigate('home')}>Services</a>
           <a href="#how-it-works" onClick={() => onNavigate('home')}>How It Works</a>
           <a href="#jobs" onClick={() => onNavigate('home')}>Jobs</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('dashboard'); }}>📊 Dashboard</a>
+          {session && <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('dashboard'); }}>👤 My Dashboard</a>}
+          {session && profile?.role === 'admin' && <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('owner'); }}>🛡️ Owner</a>}
           <button className="ask-button" onClick={() => setUnaiOpen(true)}>🤖 Ask Unai</button>
           <select aria-label="Language"><option>English</option><option>Kinyarwanda</option><option>Français</option><option>Kiswahili</option></select>
           {session ? (
@@ -1827,11 +1828,12 @@ function App() {
     ? <main className="wizard-page"><div className="wizard-card login-card" style={{ textAlign: 'center' }}><h2>You're signed in</h2><p className="step-intro">{session.user.email || session.user.phone}</p><button type="button" className="btn-primary" onClick={() => navigate('dashboard')}>Open User Dashboard</button><p style={{marginTop:12}}><button type="button" className="btn-secondary" onClick={signOutUser}>Sign out</button></p></div></main>
     : <AuthForm />;
   else if (view === 'dashboard') page = <AuthGate session={session} profile={profile}><UserDashboard session={session} onNavigate={navigate} onOpenUnai={() => setUnaiDashboardOpen(true)} /></AuthGate>;
-  else page = <AuthGate session={session} profile={profile} requireAdmin><RevenueDashboard onSignOut={signOutUser} /></AuthGate>;
+  else if (view === 'owner') page = <AuthGate session={session} profile={profile} requireAdmin><RevenueDashboard onSignOut={signOutUser} /></AuthGate>;
+  else page = <main className="wizard-page"><div className="wizard-card"><h2>Page not found</h2><button className="btn-primary" onClick={() => navigate('home')}>Return home</button></div></main>;
 
   return (
     <div className="app-wrap">
-      <Navbar onNavigate={navigate} session={session} onSignOut={signOutUser} />
+      <Navbar onNavigate={navigate} session={session} profile={profile} onSignOut={signOutUser} />
       {page}
       <AskUnaiModal open={unaiDashboardOpen} onClose={() => setUnaiDashboardOpen(false)} />
       <Footer onNavigate={navigate} />
