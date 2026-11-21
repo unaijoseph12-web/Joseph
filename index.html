@@ -318,6 +318,63 @@
   .stream-bar span { display: block; height: 100%; background: var(--teal-700); border-radius: 20px; }
   @media (max-width: 900px) { .dash-stats { grid-template-columns: 1fr 1fr; } .stream-grid { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 600px) { .dash-page { padding: 45px 6% 70px; } .dash-stats { grid-template-columns: 1fr; } .stream-grid { grid-template-columns: 1fr; } }
+
+/* ---------------- Interactive justice world ---------------- */
+.jw-page{max-width:1180px;margin:0 auto;padding:42px 5% 80px}
+.jw-welcome{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:26px}
+.jw-eyebrow{font-size:11px;letter-spacing:.14em;font-weight:800;color:var(--teal-700)}
+.jw-welcome h1{font-size:clamp(30px,4vw,44px);margin:8px 0}
+.jw-welcome p{color:var(--ink-soft);line-height:1.65;max-width:650px}
+.jw-user-chip{border:1px solid var(--line);border-radius:999px;background:var(--paper);padding:10px 14px;font-size:12px;color:var(--ink-soft);white-space:nowrap}
+.jw-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:24px 0}
+.jw-stat{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:18px}
+.jw-stat span{display:block;color:var(--ink-faint);font-size:12px}
+.jw-stat strong{display:block;font-size:25px;margin-top:8px;color:var(--teal-800)}
+.jw-layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,.8fr);gap:18px;align-items:start}
+.jw-panel{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:var(--shadow-card)}
+.jw-panel h2{font-size:22px;margin:5px 0 8px}
+.jw-muted{font-size:13px;line-height:1.6;color:var(--ink-soft)}
+.jw-map{position:relative;overflow:hidden;min-height:355px;margin-top:18px;border-radius:16px;background:radial-gradient(circle at 50% 45%,#e7f1ed,#d8e9e2 58%,#c8ddd4);padding:22px;color:#153e3c}
+.jw-map:before,.jw-map:after{content:"";position:absolute;border:2px dashed rgba(12,91,80,.24);border-radius:50%;transform:rotate(-22deg);pointer-events:none}
+.jw-map:before{width:78%;height:55%;left:10%;top:20%}
+.jw-map:after{width:55%;height:75%;left:23%;top:8%;transform:rotate(36deg)}
+.jw-map-label{position:relative;z-index:1;font-size:10px;letter-spacing:.13em;font-weight:900;color:#3b7066}
+.jw-road{position:absolute;height:4px;background:#fff;border:1px solid #b4cfc4;border-radius:8px;transform-origin:left center;z-index:1;opacity:.95}
+.jw-road.r1{width:55%;left:22%;top:47%;transform:rotate(-18deg)}
+.jw-road.r2{width:48%;left:30%;top:49%;transform:rotate(28deg)}
+.jw-road.r3{width:40%;left:48%;top:42%;transform:rotate(72deg)}
+.jw-road.r4{width:38%;left:18%;top:61%;transform:rotate(-55deg)}
+.jw-node{position:absolute;z-index:2;transform:translate(-50%,-50%);border:2px solid #fff;background:#0d6861;color:#fff;border-radius:14px;padding:9px 11px;min-width:96px;box-shadow:0 5px 14px #194d4433;text-align:center;cursor:pointer;font-size:11px;font-weight:800}
+.jw-node small{display:block;font-size:9px;font-weight:500;opacity:.86;margin-top:3px}
+.jw-node.active{background:#0b3f43;outline:3px solid #f4c66b}
+.jw-node.locked{background:#8ca6a0;color:#f7fbf9}
+.jw-node.headquarters{background:#f0bb57;color:#243c37}
+.jw-map-legend{display:flex;flex-wrap:wrap;gap:13px;margin-top:13px;color:var(--ink-soft);font-size:11px}
+.jw-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:#0d6861}
+.jw-dot.gold{background:#f0bb57}.jw-dot.grey{background:#8ca6a0}
+.jw-quest-list{display:grid;gap:10px;margin-top:15px}
+.jw-quest{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:13px;padding:13px;background:var(--paper);text-align:left;width:100%}
+.jw-quest:hover{border-color:var(--teal-700);background:var(--teal-050)}
+.jw-quest-icon{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:var(--teal-100);font-size:19px;flex-shrink:0}
+.jw-quest strong{display:block;font-size:13px}.jw-quest small{display:block;color:var(--ink-faint);font-size:11px;margin-top:4px}
+.jw-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:16px}
+.jw-action{border:1px solid var(--line);border-radius:13px;background:var(--paper);padding:15px;text-align:left;cursor:pointer}
+.jw-action strong{display:block;font-size:13px;margin:6px 0}.jw-action span{font-size:21px}
+.jw-section{margin-top:20px}
+.jw-case-row{display:grid;grid-template-columns:1fr auto;gap:10px;padding:13px 0;border-bottom:1px solid var(--line);font-size:12px}
+.jw-pill{display:inline-block;padding:5px 9px;border-radius:30px;background:var(--teal-100);color:var(--teal-800);font-size:10px;font-weight:800}
+.jw-note{background:#fff8e8;border:1px solid #f0dfb6;color:#69521e;padding:13px;border-radius:12px;font-size:12px;line-height:1.6;margin-top:13px}
+.jw-appointment-form{display:grid;gap:10px;margin-top:14px}
+.jw-appointment-form input,.jw-appointment-form select,.jw-appointment-form textarea{width:100%;padding:11px;border:1px solid var(--line);border-radius:9px;background:var(--paper)}
+.jw-appointment-form label{font-size:12px;font-weight:700}
+.jw-primary{border:0;border-radius:10px;background:var(--teal-800);color:white;padding:11px 15px;font-weight:700;cursor:pointer}
+.jw-secondary{border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:10px 14px;font-weight:700;cursor:pointer}
+.jw-tabbar{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+.jw-tab{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:9px 13px;font-size:12px;cursor:pointer}
+.jw-tab.active{background:var(--teal-800);color:#fff;border-color:var(--teal-800)}
+@media(max-width:850px){.jw-layout{grid-template-columns:1fr}.jw-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.jw-page{padding:28px 4% 60px}.jw-welcome{display:block}.jw-user-chip{display:inline-block;margin-top:14px}.jw-map{min-height:330px;padding:15px}.jw-node{min-width:76px;padding:7px 6px;font-size:10px}.jw-node small{font-size:8px}.jw-stats{gap:8px}.jw-stat{padding:13px}.jw-stat strong{font-size:21px}.jw-panel{padding:16px}}
+
 </style>
 </head>
 <body>
@@ -1607,10 +1664,132 @@ function RevenueDashboard({ onSignOut }) {
   );
 }
 
+
+/* ---------------- User dashboard: interactive justice world ---------------- */
+function UserDashboard({ session, onNavigate, onOpenUnai }) {
+  const [cases, setCases] = useState(null);
+  const [caseError, setCaseError] = useState('');
+  const [activeZone, setActiveZone] = useState('headquarters');
+  const [tab, setTab] = useState('journey');
+  const [appointment, setAppointment] = useState({ service: 'Legal guidance', date: '', time: '', note: '' });
+  const [appointmentPrepared, setAppointmentPrepared] = useState(false);
+  const displayName = session?.user?.user_metadata?.full_name || session?.user?.email || 'Citizen';
+
+  useEffect(() => {
+    let cancelled = false;
+    sb.from('cases').select('reference,service,status,submitted_at,province,district')
+      .eq('user_id', session.user.id).order('submitted_at', { ascending: false }).limit(20)
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error) setCaseError(error.message || 'Could not load your cases.');
+        else setCases(data || []);
+      });
+    return () => { cancelled = true; };
+  }, [session]);
+
+  const zone = [
+    {id:'headquarters',name:'Justice Headquarters',x:'50%',y:'47%',desc:'Start here: learn how the platform works.'},
+    {id:'north',name:'Northern Zone',x:'52%',y:'20%',desc:'Access services for Northern Province.'},
+    {id:'west',name:'Western Zone',x:'22%',y:'48%',desc:'Access services for Western Province.'},
+    {id:'kigali',name:'Kigali City',x:'69%',y:'45%',desc:'Explore services in Kigali City.'},
+    {id:'south',name:'Southern Zone',x:'43%',y:'77%',desc:'Access services for Southern Province.'},
+    {id:'east',name:'Eastern Zone',x:'82%',y:'64%',desc:'Access services for Eastern Province.'},
+  ];
+  const selectedZone = zone.find(z => z.id === activeZone) || zone[0];
+  const completed = cases ? cases.filter(c => ['Resolved','Completed'].includes(c.status)).length : 0;
+  const pending = cases ? cases.filter(c => !['Resolved','Completed'].includes(c.status)).length : 0;
+
+  function prepareAppointment(e) {
+    e.preventDefault();
+    setAppointmentPrepared(true);
+  }
+
+  return (
+    <main className="jw-page">
+      <div className="jw-welcome">
+        <div><div className="jw-eyebrow">YOUR RWANDA JUSTICE WORLD</div><h1>Welcome, {displayName.split('@')[0]}</h1>
+          <p>Your justice journey, all in one place. Explore service zones, follow your cases, and get guidance from Ask Unai.</p></div>
+        <div className="jw-user-chip">👤 Citizen account · Secure session</div>
+      </div>
+      <div className="jw-stats">
+        <div className="jw-stat"><span>My cases</span><strong>{cases === null ? '…' : cases.length}</strong></div>
+        <div className="jw-stat"><span>In progress</span><strong>{cases === null ? '…' : pending}</strong></div>
+        <div className="jw-stat"><span>Resolved</span><strong>{cases === null ? '…' : completed}</strong></div>
+        <div className="jw-stat"><span>Journey level</span><strong>1 / 6</strong></div>
+      </div>
+      <div className="jw-tabbar">
+        <button className={'jw-tab '+(tab==='journey'?'active':'')} onClick={()=>setTab('journey')}>🗺️ Justice World</button>
+        <button className={'jw-tab '+(tab==='cases'?'active':'')} onClick={()=>setTab('cases')}>📁 My Cases</button>
+        <button className={'jw-tab '+(tab==='appointments'?'active':'')} onClick={()=>setTab('appointments')}>📅 Appointments</button>
+        <button className={'jw-tab '+(tab==='payments'?'active':'')} onClick={()=>setTab('payments')}>💳 Payments</button>
+      </div>
+      {tab==='journey' && <div className="jw-layout">
+        <section className="jw-panel">
+          <div className="jw-eyebrow">EXPLORE RWANDA</div><h2>Choose your service zone</h2>
+          <p className="jw-muted">Select a zone to explore its justice services. This is an illustrative service map, not an official administrative boundary map.</p>
+          <div className="jw-map" role="group" aria-label="Interactive justice service map">
+            <div className="jw-map-label">RWANDA · JUSTICE SERVICE ROUTES</div>
+            <i className="jw-road r1"></i><i className="jw-road r2"></i><i className="jw-road r3"></i><i className="jw-road r4"></i>
+            {zone.map(z=><button key={z.id} className={'jw-node '+(z.id==='headquarters'?'headquarters ':'')+(activeZone===z.id?'active':'')} style={{left:z.x,top:z.y}} onClick={()=>setActiveZone(z.id)}>{z.id==='headquarters'?'⚖️ ':''}{z.name}<small>{z.id==='headquarters'?'START HERE':'Explore services'}</small></button>)}
+          </div>
+          <div className="jw-map-legend"><span><i className="jw-dot gold"></i>Starting hub</span><span><i className="jw-dot"></i>Service zone</span></div>
+          <div className="jw-section"><div className="jw-eyebrow">SELECTED DESTINATION</div><h2>{selectedZone.name}</h2><p className="jw-muted">{selectedZone.desc}</p></div>
+          <div className="jw-actions">
+            <button className="jw-action" onClick={()=>onNavigate('wizard')}><span>📝</span><strong>Start a case</strong><small className="jw-muted">Begin a guided submission</small></button>
+            <button className="jw-action" onClick={()=>setTab('cases')}><span>📍</span><strong>Track my journey</strong><small className="jw-muted">Review case progress</small></button>
+          </div>
+        </section>
+        <aside className="jw-panel">
+          <div className="jw-eyebrow">YOUR QUESTS</div><h2>Justice pathways</h2><p className="jw-muted">Choose what you need help with.</p>
+          <div className="jw-quest-list">
+            <button className="jw-quest" onClick={()=>onNavigate('wizard')}><span className="jw-quest-icon">📝</span><span><strong>Submit a case</strong><small>Report a problem or dispute</small></span></button>
+            <button className="jw-quest" onClick={()=>setTab('cases')}><span className="jw-quest-icon">🔎</span><span><strong>Follow my case</strong><small>See status and updates</small></span></button>
+            <button className="jw-quest" onClick={()=>setTab('appointments')}><span className="jw-quest-icon">📅</span><span><strong>Appointment centre</strong><small>Prepare an appointment request</small></span></button>
+            <button className="jw-quest" onClick={onOpenUnai}><span className="jw-quest-icon">🤖</span><span><strong>Ask Unai AI</strong><small>Get help understanding the process</small></span></button>
+          </div>
+          <div className="jw-note">🔐 Keep your case reference number private. Ask Unai provides general guidance and is not a lawyer or an emergency service.</div>
+        </aside>
+      </div>}
+      {tab==='cases' && <section className="jw-panel">
+        <div className="jw-eyebrow">CASE JOURNEY</div><h2>My cases</h2><p className="jw-muted">Cases submitted using this signed-in account.</p>
+        {caseError && <p className="jw-note">Could not load cases: {caseError}</p>}
+        {cases===null && !caseError && <p className="jw-muted">Loading your cases…</p>}
+        {cases && cases.length===0 && <p className="jw-muted">You have not submitted a case yet. Start a case to see its progress here.</p>}
+        {cases && cases.map(c=><div className="jw-case-row" key={c.reference}><div><strong>{c.reference}</strong><div className="jw-muted">{SERVICES.find(s=>s.id===c.service)?.title || c.service} · {c.district || ''} {c.province || ''}</div><small className="jw-muted">{formatDate(c.submitted_at)}</small></div><span className="jw-pill">{c.status || 'Under Review'}</span></div>)}
+        <div style={{marginTop:18}}><button className="jw-primary" onClick={()=>onNavigate('wizard')}>＋ Submit a new case</button></div>
+      </section>}
+      {tab==='appointments' && <section className="jw-panel">
+        <div className="jw-eyebrow">APPOINTMENT CENTRE</div><h2>Prepare an appointment request</h2>
+        <p className="jw-muted">Choose the service and preferred time. This form currently prepares a request locally; it does not book or send an appointment until the appointments database and office scheduling workflow are connected.</p>
+        <form className="jw-appointment-form" onSubmit={prepareAppointment}>
+          <label>Service<select value={appointment.service} onChange={e=>setAppointment(a=>({...a,service:e.target.value}))}><option>Legal guidance</option><option>Case follow-up</option><option>Document support</option><option>Mediation support</option></select></label>
+          <label>Preferred date<input type="date" min={new Date().toISOString().slice(0,10)} required value={appointment.date} onChange={e=>setAppointment(a=>({...a,date:e.target.value}))}/></label>
+          <label>Preferred time<select required value={appointment.time} onChange={e=>setAppointment(a=>({...a,time:e.target.value}))}><option value="">Choose a time</option><option>09:00–11:00</option><option>11:00–13:00</option><option>14:00–16:00</option></select></label>
+          <label>Note (optional)<textarea rows="3" value={appointment.note} onChange={e=>setAppointment(a=>({...a,note:e.target.value}))} placeholder="Briefly explain what you need help with"/></label>
+          <button className="jw-primary" type="submit">Prepare appointment request</button>
+        </form>
+        {appointmentPrepared && <div className="jw-note">Request prepared for {appointment.service} on {appointment.date} at {appointment.time}. It has not been sent or confirmed. Contact the relevant office until online booking is activated.</div>}
+      </section>}
+      {tab==='payments' && <section className="jw-panel">
+        <div className="jw-eyebrow">PAYMENT CENTRE</div><h2>Appointments & service payments</h2>
+        <p className="jw-muted">View payment information before paying. No payment is currently being collected through this dashboard.</p>
+        <div className="jw-actions">
+          <div className="jw-action"><span>📱</span><strong>MTN Mobile Money</strong><small className="jw-muted">Planned secure provider integration</small></div>
+          <div className="jw-action"><span>📱</span><strong>Airtel Money</strong><small className="jw-muted">Planned secure provider integration</small></div>
+        </div>
+        <div className="jw-note">⚠️ No payment has been taken. Never enter your MoMo PIN or mobile-money password into this website. Any future payment must be processed by a verified payment provider and confirmed by a secure server callback.</div>
+        <div className="jw-section"><h3>Payment history</h3><p className="jw-muted">No verified transactions are connected yet.</p></div>
+      </section>}
+    </main>
+  );
+}
+
+
 /* ---------------- App shell ---------------- */
 
 function App() {
   const [view, setView] = useState('home');
+  const [unaiDashboardOpen, setUnaiDashboardOpen] = useState(false);
   const [session, setSession] = useState(undefined); // undefined = checking, null = signed out
   const [profile, setProfile] = useState(null);
 
@@ -1645,14 +1824,16 @@ function App() {
   if (view === 'home') page = <Home onNavigate={navigate} />;
   else if (view === 'wizard') page = <AuthGate session={session} profile={profile}><SubmitCase onNavigate={navigate} /></AuthGate>;
   else if (view === 'account') page = session
-    ? <main className="wizard-page"><div className="wizard-card login-card" style={{ textAlign: 'center' }}><h2>You're signed in</h2><p className="step-intro">{session.user.email || session.user.phone}</p><button type="button" className="btn-secondary" onClick={signOutUser}>Sign out</button></div></main>
+    ? <main className="wizard-page"><div className="wizard-card login-card" style={{ textAlign: 'center' }}><h2>You're signed in</h2><p className="step-intro">{session.user.email || session.user.phone}</p><button type="button" className="btn-primary" onClick={() => navigate('dashboard')}>Open User Dashboard</button><p style={{marginTop:12}}><button type="button" className="btn-secondary" onClick={signOutUser}>Sign out</button></p></div></main>
     : <AuthForm />;
+  else if (view === 'dashboard') page = <AuthGate session={session} profile={profile}><UserDashboard session={session} onNavigate={navigate} onOpenUnai={() => setUnaiDashboardOpen(true)} /></AuthGate>;
   else page = <AuthGate session={session} profile={profile} requireAdmin><RevenueDashboard onSignOut={signOutUser} /></AuthGate>;
 
   return (
     <div className="app-wrap">
       <Navbar onNavigate={navigate} session={session} onSignOut={signOutUser} />
       {page}
+      <AskUnaiModal open={unaiDashboardOpen} onClose={() => setUnaiDashboardOpen(false)} />
       <Footer onNavigate={navigate} />
     </div>
   );
