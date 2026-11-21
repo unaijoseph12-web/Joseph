@@ -1180,8 +1180,8 @@ function AuthForm({ notice: initialNotice }) {
     try {
       if (mode === 'verify') {
         const cleanCode = otp.trim();
-        if (!/^\d{6}$/.test(cleanCode)) {
-          throw new Error('Enter the 6-digit verification code you received.');
+        if (!/^\d{6,8}$/.test(cleanCode)) {
+          throw new Error('Enter the 6- to 8-digit verification code you received.');
         }
         const result = pendingMethod === 'phone'
           ? await sb.auth.verifyOtp({ phone: pendingContact, token: cleanCode, type: 'sms' })
@@ -1292,7 +1292,7 @@ function AuthForm({ notice: initialNotice }) {
         <h2>{isVerifying ? (pendingMethod === 'phone' ? 'Enter your SMS code' : 'Enter your email verification code') : isSigningUp ? 'Create your account' : 'Welcome back'}</h2>
         <p className="step-intro">
           {isVerifying
-            ? 'Enter the 6-digit code sent to ' + pendingContact + '. Do not share this code with anyone.'
+            ? 'Enter the code sent to ' + pendingContact + '. Do not share this code with anyone.'
             : isSigningUp
               ? 'Create an account to submit and track your cases. Choose whether to receive your verification code by email or SMS.'
               : 'Sign in with your email and password. Owner/Admin accounts use password sign-in and are not asked for a new verification code at every login. The owner account must have its email confirmed and its admin role assigned once in Supabase.'}
@@ -1304,7 +1304,7 @@ function AuthForm({ notice: initialNotice }) {
           <>
             <div className="field">
               <label htmlFor="auth-code">{pendingMethod === 'phone' ? 'SMS verification code' : 'Email verification code'}</label>
-              <input id="auth-code" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="Enter 6-digit code" required autoFocus />
+              <input id="auth-code" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6,8}" minLength={6} maxLength={8} value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 8))} placeholder="Enter verification code" required autoFocus />
             </div>
             {error && <span className="field-error" role="alert">{error}</span>}
             <div className="wizard-actions">
