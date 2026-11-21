@@ -606,7 +606,7 @@ function Navbar({ onNavigate, session, profile, onSignOut }) {
           <button className="ask-button" onClick={() => setUnaiOpen(true)}>🤖 Ask Unai</button>
           <select aria-label="Language"><option>English</option><option>Kinyarwanda</option><option>Français</option><option>Kiswahili</option></select>
           {session ? (
-            <button className="login-button" onClick={onSignOut} title={session.user.email}>Sign out</button>
+            <button className="login-button" onClick={() => onNavigate('dashboard')} title={session.user.email}>My Dashboard</button>
           ) : (
             <button className="login-button" onClick={(e) => { e.preventDefault(); onNavigate('account'); }}>Sign In</button>
           )}
@@ -1667,7 +1667,7 @@ function RevenueDashboard({ onSignOut }) {
 
 
 /* ---------------- User dashboard: interactive justice world ---------------- */
-function UserDashboard({ session, onNavigate, onOpenUnai }) {
+function UserDashboard({ session, onNavigate, onOpenUnai, onSignOut }) {
   const [cases, setCases] = useState(null);
   const [caseError, setCaseError] = useState('');
   const [activeZone, setActiveZone] = useState('headquarters');
@@ -1710,7 +1710,7 @@ function UserDashboard({ session, onNavigate, onOpenUnai }) {
       <div className="jw-welcome">
         <div><div className="jw-eyebrow">YOUR RWANDA JUSTICE WORLD</div><h1>Welcome, {displayName.split('@')[0]}</h1>
           <p>Your justice journey, all in one place. Explore service zones, follow your cases, and get guidance from Ask Unai.</p></div>
-        <div className="jw-user-chip">👤 Citizen account · Secure session</div>
+        <div><div className="jw-user-chip">👤 Citizen account · Secure session</div><div style={{textAlign:'right',marginTop:9}}><button className="jw-secondary" onClick={onSignOut}>Sign out</button></div></div>
       </div>
       <div className="jw-stats">
         <div className="jw-stat"><span>My cases</span><strong>{cases === null ? '…' : cases.length}</strong></div>
@@ -1827,7 +1827,7 @@ function App() {
   else if (view === 'account') page = session
     ? <main className="wizard-page"><div className="wizard-card login-card" style={{ textAlign: 'center' }}><h2>You're signed in</h2><p className="step-intro">{session.user.email || session.user.phone}</p><button type="button" className="btn-primary" onClick={() => navigate('dashboard')}>Open User Dashboard</button><p style={{marginTop:12}}><button type="button" className="btn-secondary" onClick={signOutUser}>Sign out</button></p></div></main>
     : <AuthForm />;
-  else if (view === 'dashboard') page = <AuthGate session={session} profile={profile}><UserDashboard session={session} onNavigate={navigate} onOpenUnai={() => setUnaiDashboardOpen(true)} /></AuthGate>;
+  else if (view === 'dashboard') page = <AuthGate session={session} profile={profile}><UserDashboard session={session} onNavigate={navigate} onOpenUnai={() => setUnaiDashboardOpen(true)} onSignOut={signOutUser} /></AuthGate>;
   else if (view === 'owner') page = <AuthGate session={session} profile={profile} requireAdmin><RevenueDashboard onSignOut={signOutUser} /></AuthGate>;
   else page = <main className="wizard-page"><div className="wizard-card"><h2>Page not found</h2><button className="btn-primary" onClick={() => navigate('home')}>Return home</button></div></main>;
 
