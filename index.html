@@ -1841,6 +1841,51 @@ function RevenueDashboard({ onSignOut }) {
 
 
 /* ---------------- User dashboard: interactive justice world ---------------- */
+function JusticeQuestboard({ userId }) {
+  const questItems = [
+    {id:'rights',icon:'📘',title:'Know the service pathway',desc:'Read the service information and understand where to ask for help.',points:10},
+    {id:'privacy',icon:'🔐',title:'Complete a privacy check',desc:'Learn what personal information to protect and never share your case reference publicly.',points:10},
+    {id:'documents',icon:'🗂️',title:'Prepare a document checklist',desc:'List the documents you may need before starting a request. Do not upload anything unless it is relevant.',points:15},
+    {id:'zones',icon:'🗺️',title:'Explore the service zones',desc:'Explore the illustrative map and identify the service zone relevant to your location.',points:10},
+    {id:'digital-safety',icon:'🛡️',title:'Learn digital safety basics',desc:'Use a unique password and never share verification codes, passwords or payment PINs.',points:15},
+    {id:'feedback',icon:'💡',title:'Suggest a community improvement',desc:'Think of one practical way digital public services could become easier to access.',points:20},
+  ];
+  const storageKey='rwandaJustice.quests.v1.'+userId;
+  const [done,setDone]=useState(()=>readJSON(storageKey,[]));
+  function completeQuest(id) {
+    if(done.includes(id)) return;
+    const next=[...done,id];
+    setDone(next);
+    writeJSON(storageKey,next);
+  }
+  const points=questItems.filter(q=>done.includes(q.id)).reduce((sum,q)=>sum+q.points,0);
+  const progress=Math.round(done.length/questItems.length*100);
+  const badges=[];
+  if(done.length>=1) badges.push('🌱 First steps');
+  if(done.length>=3) badges.push('🧭 Service explorer');
+  if(done.length>=5) badges.push('🔐 Digital citizen');
+  if(done.length===questItems.length) badges.push('🏅 Justice World finisher');
+  return (
+    <section className="jw-questboard" aria-label="Justice World quests and progress">
+      <div className="jw-questboard-head">
+        <div><div className="jw-eyebrow">JUSTICE WORLD · PRACTICAL QUESTS</div><h2>Your progress journey</h2><p>Complete short learning and preparation activities to build confidence using digital justice services.</p></div>
+        <div className="jw-quest-score"><strong>{points}</strong><span>Personal points</span></div>
+      </div>
+      <div className="jw-quest-progress"><span style={{width:progress+'%'}}/></div>
+      <p>{done.length} of {questItems.length} quests completed · {progress}% progress</p>
+      <div className="jw-quest-grid">
+        {questItems.map(q=><article className="jw-quest-card" key={q.id}>
+          <span style={{fontSize:25}}>{q.icon}</span><strong>{q.title}</strong><small>{q.desc}</small>
+          <button type="button" disabled={done.includes(q.id)} onClick={()=>completeQuest(q.id)}>{done.includes(q.id)?'✓ Completed · '+q.points+' pts':'Complete quest · '+q.points+' pts'}</button>
+        </article>)}
+      </div>
+      <div className="jw-quest-badges">{badges.length?badges.map(b=><span key={b}>{b}</span>):<span>Complete a quest to unlock your first badge</span>}</div>
+      <p style={{marginTop:14,fontSize:11}}>Progress is saved only in this browser on this device. Points and badges are personal demonstration features—not official awards, a public leaderboard, case priority, or a reward for submitting a case. Your access to justice is not affected by your score.</p>
+    </section>
+  );
+}
+
+
 function UserDashboard({ session, onNavigate, onOpenUnai, onSignOut }) {
   const [cases, setCases] = useState(null);
   const [caseError, setCaseError] = useState('');
@@ -1932,50 +1977,6 @@ function UserDashboard({ session, onNavigate, onOpenUnai, onSignOut }) {
         <div className="jw-stat"><span>Resolved</span><strong>{cases === null ? '…' : completed}</strong></div>
         <div className="jw-stat"><span>Journey level</span><strong>1 / 6</strong></div>
       </div>
-function JusticeQuestboard({ userId }) {
-  const questItems = [
-    {id:'rights',icon:'📘',title:'Know the service pathway',desc:'Read the service information and understand where to ask for help.',points:10},
-    {id:'privacy',icon:'🔐',title:'Complete a privacy check',desc:'Learn what personal information to protect and never share your case reference publicly.',points:10},
-    {id:'documents',icon:'🗂️',title:'Prepare a document checklist',desc:'List the documents you may need before starting a request. Do not upload anything unless it is relevant.',points:15},
-    {id:'zones',icon:'🗺️',title:'Explore the service zones',desc:'Explore the illustrative map and identify the service zone relevant to your location.',points:10},
-    {id:'digital-safety',icon:'🛡️',title:'Learn digital safety basics',desc:'Use a unique password and never share verification codes, passwords or payment PINs.',points:15},
-    {id:'feedback',icon:'💡',title:'Suggest a community improvement',desc:'Think of one practical way digital public services could become easier to access.',points:20},
-  ];
-  const storageKey='rwandaJustice.quests.v1.'+userId;
-  const [done,setDone]=useState(()=>readJSON(storageKey,[]));
-  function completeQuest(id) {
-    if(done.includes(id)) return;
-    const next=[...done,id];
-    setDone(next);
-    writeJSON(storageKey,next);
-  }
-  const points=questItems.filter(q=>done.includes(q.id)).reduce((sum,q)=>sum+q.points,0);
-  const progress=Math.round(done.length/questItems.length*100);
-  const badges=[];
-  if(done.length>=1) badges.push('🌱 First steps');
-  if(done.length>=3) badges.push('🧭 Service explorer');
-  if(done.length>=5) badges.push('🔐 Digital citizen');
-  if(done.length===questItems.length) badges.push('🏅 Justice World finisher');
-  return (
-    <section className="jw-questboard" aria-label="Justice World quests and progress">
-      <div className="jw-questboard-head">
-        <div><div className="jw-eyebrow">JUSTICE WORLD · PRACTICAL QUESTS</div><h2>Your progress journey</h2><p>Complete short learning and preparation activities to build confidence using digital justice services.</p></div>
-        <div className="jw-quest-score"><strong>{points}</strong><span>Personal points</span></div>
-      </div>
-      <div className="jw-quest-progress"><span style={{width:progress+'%'}}/></div>
-      <p>{done.length} of {questItems.length} quests completed · {progress}% progress</p>
-      <div className="jw-quest-grid">
-        {questItems.map(q=><article className="jw-quest-card" key={q.id}>
-          <span style={{fontSize:25}}>{q.icon}</span><strong>{q.title}</strong><small>{q.desc}</small>
-          <button type="button" disabled={done.includes(q.id)} onClick={()=>completeQuest(q.id)}>{done.includes(q.id)?'✓ Completed · '+q.points+' pts':'Complete quest · '+q.points+' pts'}</button>
-        </article>)}
-      </div>
-      <div className="jw-quest-badges">{badges.length?badges.map(b=><span key={b}>{b}</span>):<span>Complete a quest to unlock your first badge</span>}</div>
-      <p style={{marginTop:14,fontSize:11}}>Progress is saved only in this browser on this device. Points and badges are personal demonstration features—not official awards, a public leaderboard, case priority, or a reward for submitting a case. Your access to justice is not affected by your score.</p>
-    </section>
-  );
-}
-
       <JusticeQuestboard userId={session.user.id} />
       <div className="jw-tabbar">
         <button className={'jw-tab '+(tab==='journey'?'active':'')} onClick={()=>setTab('journey')}>🗺️ Justice World</button>
