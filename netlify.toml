@@ -1,0 +1,5 @@
+[build]
+  publish = "."
+
+# RWANDA JUSTICE is a static single-page HTML site.
+# No build command is required.
