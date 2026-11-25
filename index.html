@@ -401,6 +401,21 @@
 @media(max-width:850px){.jw-layout{grid-template-columns:1fr}.jw-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.jw-page{padding:28px 4% 60px}.jw-welcome{display:block}.jw-user-chip{display:inline-block;margin-top:14px}.jw-map{min-height:330px;padding:15px}.jw-node{min-width:76px;padding:7px 6px;font-size:10px}.jw-node small{font-size:8px}.jw-stats{gap:8px}.jw-stat{padding:13px}.jw-stat strong{font-size:21px}.jw-panel{padding:16px}}
 
+
+/* Vision 2050 transformation animation */
+.j2050-transition{position:relative;overflow:hidden;margin:26px 0 32px;border-radius:22px;background:#0b2630;color:#fff;box-shadow:0 18px 48px rgba(8,35,42,.2)}
+.j2050-transition-head{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:20px 24px 8px}
+.j2050-transition-head h3{margin:0;font-size:clamp(18px,3vw,25px);color:#fff}.j2050-transition-head span{font-size:11px;letter-spacing:.12em;font-weight:800;color:#a9dcd4}
+.j2050-scene{position:relative;height:clamp(220px,34vw,340px);overflow:hidden;background:linear-gradient(#9bc9d1 0%,#d5e5d9 65%,#668d72 66%,#315b4b 100%)}
+.j2050-scene svg{position:absolute;inset:0;width:100%;height:100%}.j2050-before{animation:j2050-before 14s ease-in-out infinite}.j2050-after{opacity:0;animation:j2050-after 14s ease-in-out infinite}
+.j2050-scene:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,24,30,.35),transparent 45%,rgba(7,24,30,.12));pointer-events:none}
+.j2050-scene-label{position:absolute;z-index:1;left:20px;bottom:18px;padding:9px 13px;border-radius:30px;background:rgba(7,29,35,.78);font-size:12px;font-weight:800;letter-spacing:.06em}
+.j2050-progress{height:5px;background:rgba(255,255,255,.14)}.j2050-progress:before{content:'';display:block;height:100%;width:0;background:#7de0c7;animation:j2050-progress 14s linear infinite}
+.j2050-transition-foot{padding:12px 22px 18px;color:#d5e8e4;font-size:12px;line-height:1.6}
+@keyframes j2050-before{0%,36%{opacity:1}48%,100%{opacity:0}}@keyframes j2050-after{0%,38%{opacity:0}52%,92%{opacity:1}100%{opacity:0}}
+@keyframes j2050-progress{0%{width:0}100%{width:100%}}
+@media(prefers-reduced-motion:reduce){.j2050-before,.j2050-after,.j2050-progress:before{animation:none}.j2050-before{opacity:0}.j2050-after{opacity:1}}
+@media(max-width:560px){.j2050-transition-head{align-items:flex-start;flex-direction:column;padding:16px 16px 6px}.j2050-transition-foot{padding:10px 16px 15px}}
 </style>
 </head>
 <body>
@@ -893,6 +908,33 @@ function Justice2050Vision() {
       <div className="section-label">THE FUTURE OF ACCESS TO JUSTICE</div>
       <h2>RWANDA JUSTICE 2050</h2>
       <p className="j2050-intro">A long-term vision for a justice experience that is more accessible, understandable, secure and citizen-centred. These are proposed ideas, not a claim that every service is already operational.</p>
+      <div className="j2050-transition" aria-label="Illustrative animation showing infrastructure transformation from current challenges toward Rwanda Vision 2050">
+        <div className="j2050-transition-head"><h3>From today’s challenges to Rwanda Vision 2050</h3><span>AN ILLUSTRATIVE FUTURE SCENARIO</span></div>
+        <div className="j2050-scene">
+          <svg className="j2050-before" viewBox="0 0 1000 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustration of a rural road and small homes">
+            <rect width="1000" height="360" fill="#b9d1cf"/><circle cx="810" cy="65" r="34" fill="#f4d89a"/>
+            <path d="M0 205 Q220 165 420 210 T1000 190 V360 H0Z" fill="#789b76"/><path d="M0 245 Q240 210 470 255 T1000 235 V360 H0Z" fill="#52785d"/>
+            <path d="M360 360 L465 210 L570 210 L720 360Z" fill="#9b8b70"/><path d="M490 360 L505 220 L520 220 L550 360Z" fill="#d7c5a2" opacity=".8"/>
+            <g fill="#d5b58b" stroke="#715f4b" strokeWidth="5"><path d="M90 190 L155 135 L220 190 V250 H90Z"/><path d="M245 205 L300 160 L355 205 V255 H245Z"/><path d="M710 190 L770 135 L830 190 V245 H710Z"/></g>
+            <g fill="#735747"><path d="M75 190 L155 120 L235 190Z"/><path d="M230 205 L300 145 L370 205Z"/><path d="M695 190 L770 120 L845 190Z"/></g>
+            <g fill="#46635a"><rect x="130" y="205" width="30" height="45"/><rect x="280" y="218" width="24" height="37"/><rect x="755" y="205" width="30" height="40"/></g>
+            <g fill="#315c43"><circle cx="45" cy="175" r="42"/><rect x="38" y="175" width="14" height="70"/><circle cx="920" cy="160" r="48"/><rect x="913" y="160" width="14" height="90"/></g>
+          </svg>
+          <svg className="j2050-after" viewBox="0 0 1000 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustration of a connected modern city, smooth highway and green transport">
+            <defs><linearGradient id="j2050sky" x2="0" y2="1"><stop stopColor="#4d9db5"/><stop offset="1" stopColor="#d7eee4"/></linearGradient><linearGradient id="j2050road" x2="0" y2="1"><stop stopColor="#627b85"/><stop offset="1" stopColor="#263e4a"/></linearGradient></defs>
+            <rect width="1000" height="360" fill="url(#j2050sky)"/><circle cx="820" cy="60" r="35" fill="#fff0b5"/>
+            <path d="M0 245 Q200 185 390 230 T1000 215 V360 H0Z" fill="#4c9875"/>
+            <g fill="#e9f4f0"><rect x="80" y="105" width="80" height="145" rx="5"/><rect x="175" y="75" width="95" height="175" rx="5"/><rect x="290" y="125" width="72" height="125" rx="5"/><rect x="650" y="90" width="82" height="160" rx="5"/><rect x="750" y="55" width="100" height="195" rx="5"/><rect x="870" y="120" width="70" height="130" rx="5"/></g>
+            <g fill="#4c91a3"><path d="M90 125h15v18H90zm28 0h15v18h-15zm57-22h18v18h-18zm35 0h18v18h-18zm-35 38h18v18h-18zm35 0h18v18h-18zm95 2h15v18h-15zm565-65h20v20h-20zm35 0h20v20h-20zm-35 38h20v20h-20zm35 0h20v20h-20z"/></g>
+            <path d="M0 360 L330 250 L670 250 L1000 360Z" fill="url(#j2050road)"/><path d="M490 360 L490 255 L510 255 L560 360Z" fill="#f5e6a8"/><path d="M120 285 Q500 205 880 285" fill="none" stroke="#d5f5eb" strokeWidth="8"/>
+            <g fill="#e5fff7"><rect x="380" y="225" width="95" height="38" rx="12"/><rect x="680" y="250" width="110" height="40" rx="12"/></g><g fill="#238a78"><rect x="395" y="232" width="65" height="13" rx="4"/><rect x="695" y="257" width="75" height="13" rx="4"/></g>
+            <g fill="#1d644e"><circle cx="35" cy="215" r="42"/><rect x="28" y="215" width="14" height="55"/><circle cx="965" cy="205" r="45"/><rect x="958" y="205" width="14" height="65"/></g>
+          </svg>
+          <span className="j2050-scene-label">A possible journey: resilient rural links → connected, modern infrastructure</span>
+        </div>
+        <div className="j2050-progress"></div>
+        <div className="j2050-transition-foot">The scene gradually transforms to represent a proposed future: better roads and bridges, connected communities, modern public facilities, clean mobility and digital access. This is a conceptual animation—not a prediction or a report of completed government projects.</div>
+      </div>
       <div className="j2050-grid">
         {cards.map((card) => <article className="j2050-card" key={card.title}>
           {card.src ? <img src={card.src} alt={card.alt} loading="lazy" referrerPolicy="no-referrer" /> : <div style={{height:185,display:'grid',placeItems:'center',background:'linear-gradient(135deg,#0b4f55,#14333c)',color:'#fff',fontSize:54}} aria-hidden="true">🔐</div>}
