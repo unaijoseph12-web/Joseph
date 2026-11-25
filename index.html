@@ -416,6 +416,67 @@
 @keyframes j2050-progress{0%{width:0}100%{width:100%}}
 @media(prefers-reduced-motion:reduce){.j2050-before,.j2050-after,.j2050-progress:before{animation:none}.j2050-before{opacity:0}.j2050-after{opacity:1}}
 @media(max-width:560px){.j2050-transition-head{align-items:flex-start;flex-direction:column;padding:16px 16px 6px}.j2050-transition-foot{padding:10px 16px 15px}}
+
+  /* Rwanda photo-led environment: real places sit behind readable activity panels. */
+  body {
+    background-color: #e8efed;
+    background-image:
+      linear-gradient(rgba(241,247,245,.82), rgba(241,247,245,.88)),
+      url('https://images.pexels.com/photos/36653839/pexels-photo-36653839.jpeg?cs=srgb&dl=pexels-christian-nzayisenga-2160342483-36653839.jpg&fm=jpg');
+    background-position: center, center;
+    background-size: cover, cover;
+    background-attachment: fixed, fixed;
+  }
+  .hero {
+    background-image: linear-gradient(90deg,rgba(239,248,246,.93),rgba(239,248,246,.72)),
+      url('https://images.pexels.com/photos/31466706/pexels-photo-31466706.jpeg?cs=srgb&dl=pexels-faustin-nkurunziza-2151028521-31466706.jpg&fm=jpg');
+    background-position:center;
+    background-size:cover;
+  }
+  .section, .stats, .dash-page, .jw-page, .wizard-page {
+    background-color:rgba(248,250,248,.80);
+    backdrop-filter:blur(5px);
+  }
+  .section.grey { background-color:rgba(224,238,234,.82); }
+  .jobs-section {
+    background-image:linear-gradient(90deg,rgba(5,43,47,.94),rgba(5,43,47,.78)),
+      url('https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Nyabugogo_Bridge_on_the_Kigali-Muhanga_Road_%28NR1%29.jpg/1280px-Nyabugogo_Bridge_on_the_Kigali-Muhanga_Road_%28NR1%29.jpg');
+    background-position:center;
+    background-size:cover;
+  }
+  .jw-panel, .tracker-card, .wizard-card, .chart-card, .stat-card, .revenue-card,
+  .service-card, .job-card, .j2050-card {
+    background-color:rgba(255,255,255,.94);
+    backdrop-filter:blur(8px);
+  }
+  .j2050-real-world { margin:28px 0 34px; }
+  .j2050-real-world-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-top:18px; }
+  .j2050-place { overflow:hidden; border:1px solid var(--line); border-radius:16px; background:rgba(255,255,255,.96); box-shadow:var(--shadow-card); }
+  .j2050-place img { width:100%; height:210px; object-fit:cover; display:block; }
+  .j2050-place div { padding:16px; }
+  .j2050-place h3 { font-size:18px; margin-bottom:7px; }
+  .j2050-place p { color:var(--ink-soft); font-size:13px; line-height:1.55; }
+  .j2050-place small { display:block; margin-top:10px; color:var(--ink-faint); font-size:10px; line-height:1.5; }
+  .jw-questboard { margin:22px 0 26px; padding:24px; border-radius:20px; color:#f2fbf8; background:linear-gradient(120deg,rgba(7,55,59,.97),rgba(18,91,91,.92)),url('https://images.pexels.com/photos/31466706/pexels-photo-31466706.jpeg?cs=srgb&dl=pexels-faustin-nkurunziza-2151028521-31466706.jpg&fm=jpg') center/cover; box-shadow:0 18px 44px rgba(7,40,43,.18); }
+  .jw-questboard-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  .jw-questboard .jw-eyebrow { color:#a9dcd0; }
+  .jw-questboard h2 { color:#fff; margin:7px 0; }
+  .jw-questboard p { color:#d2e8e2; line-height:1.55; font-size:13px; }
+  .jw-quest-score { min-width:112px; padding:12px 16px; border:1px solid rgba(255,255,255,.25); border-radius:14px; background:rgba(255,255,255,.10); text-align:center; }
+  .jw-quest-score strong { display:block; color:#ffe49b; font-size:25px; }
+  .jw-quest-progress { height:9px; overflow:hidden; margin:17px 0 8px; border-radius:20px; background:rgba(255,255,255,.18); }
+  .jw-quest-progress span { display:block; height:100%; border-radius:20px; background:#f5d77d; transition:width .3s ease; }
+  .jw-quest-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:18px; }
+  .jw-quest-card { display:flex; flex-direction:column; align-items:flex-start; gap:9px; padding:16px; border:1px solid rgba(255,255,255,.18); border-radius:14px; background:rgba(255,255,255,.10); color:#fff; text-align:left; }
+  .jw-quest-card strong { font-size:14px; }
+  .jw-quest-card small { color:#d2e8e2; font-size:12px; line-height:1.45; }
+  .jw-quest-card button { margin-top:auto; border:0; border-radius:9px; padding:8px 11px; background:#f5d77d; color:#173c3d; font-weight:800; font-size:12px; }
+  .jw-quest-card button:disabled { background:#c8e5d8; color:#24564b; cursor:default; }
+  .jw-quest-badges { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+  .jw-quest-badges span { border:1px solid rgba(255,255,255,.24); border-radius:999px; padding:7px 10px; color:#ffe49b; font-size:11px; font-weight:700; }
+  @media(max-width:800px){.j2050-real-world-grid,.jw-quest-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:560px){.j2050-real-world-grid,.jw-quest-grid{grid-template-columns:1fr;}.j2050-place img{height:190px;}}
+
 </style>
 </head>
 <body>
@@ -934,6 +995,25 @@ function Justice2050Vision() {
         </div>
         <div className="j2050-progress"></div>
         <div className="j2050-transition-foot">The scene gradually transforms to represent a proposed future: better roads and bridges, connected communities, modern public facilities, clean mobility and digital access. This is a conceptual animation—not a prediction or a report of completed government projects.</div>
+      </div>
+      <div className="j2050-real-world">
+        <div className="section-label">REAL RWANDA · PHOTOGRAPHIC INFRASTRUCTURE</div>
+        <h3 style={{fontSize:24,marginTop:8}}>Infrastructure people can recognise today</h3>
+        <p className="section-description" style={{maxWidth:760,lineHeight:1.6}}>These photographs show real places and transport infrastructure in Rwanda. They are examples for context—not a complete national inventory or a claim that every area has the same facilities.</p>
+        <div className="j2050-real-world-grid">
+          <article className="j2050-place">
+            <img src="https://images.pexels.com/photos/31466706/pexels-photo-31466706.jpeg?cs=srgb&dl=pexels-faustin-nkurunziza-2151028521-31466706.jpg&fm=jpg" alt="Photograph of Kigali city and its urban development" loading="lazy"/>
+            <div><h3>Kigali urban connections</h3><p>A real city view showing buildings, greenery and the urban environment in Kigali.</p><small>Photo: Faustin Nkurunziza · Pexels · Kigali, Rwanda</small></div>
+          </article>
+          <article className="j2050-place">
+            <img src="https://images.pexels.com/photos/36653839/pexels-photo-36653839.jpeg?cs=srgb&dl=pexels-christian-nzayisenga-2160342483-36653839.jpg&fm=jpg" alt="Paved road through the Rwandan landscape" loading="lazy"/>
+            <div><h3>Road connections</h3><p>A real paved road photographed in Rwanda, representing the importance of safe links between communities.</p><small>Photo: Christian Nzayisenga · Pexels · Rwanda</small></div>
+          </article>
+          <article className="j2050-place">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Nyabugogo_Bridge_on_the_Kigali-Muhanga_Road_%28NR1%29.jpg/1280px-Nyabugogo_Bridge_on_the_Kigali-Muhanga_Road_%28NR1%29.jpg" alt="Nyabugogo bridge on the Kigali-Muhanga National Route 1" loading="lazy"/>
+            <div><h3>Nyabugogo bridge · NR1</h3><p>A documented bridge on the Kigali–Muhanga road, showing a real transport connection.</p><small>Photo: Mugisha Don de Dieu · Wikimedia Commons · CC BY 2.0 · <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noreferrer">License</a></small></div>
+          </article>
+        </div>
       </div>
       <div className="j2050-grid">
         {cards.map((card) => <article className="j2050-card" key={card.title}>
@@ -1852,6 +1932,51 @@ function UserDashboard({ session, onNavigate, onOpenUnai, onSignOut }) {
         <div className="jw-stat"><span>Resolved</span><strong>{cases === null ? '…' : completed}</strong></div>
         <div className="jw-stat"><span>Journey level</span><strong>1 / 6</strong></div>
       </div>
+function JusticeQuestboard({ userId }) {
+  const questItems = [
+    {id:'rights',icon:'📘',title:'Know the service pathway',desc:'Read the service information and understand where to ask for help.',points:10},
+    {id:'privacy',icon:'🔐',title:'Complete a privacy check',desc:'Learn what personal information to protect and never share your case reference publicly.',points:10},
+    {id:'documents',icon:'🗂️',title:'Prepare a document checklist',desc:'List the documents you may need before starting a request. Do not upload anything unless it is relevant.',points:15},
+    {id:'zones',icon:'🗺️',title:'Explore the service zones',desc:'Explore the illustrative map and identify the service zone relevant to your location.',points:10},
+    {id:'digital-safety',icon:'🛡️',title:'Learn digital safety basics',desc:'Use a unique password and never share verification codes, passwords or payment PINs.',points:15},
+    {id:'feedback',icon:'💡',title:'Suggest a community improvement',desc:'Think of one practical way digital public services could become easier to access.',points:20},
+  ];
+  const storageKey='rwandaJustice.quests.v1.'+userId;
+  const [done,setDone]=useState(()=>readJSON(storageKey,[]));
+  function completeQuest(id) {
+    if(done.includes(id)) return;
+    const next=[...done,id];
+    setDone(next);
+    writeJSON(storageKey,next);
+  }
+  const points=questItems.filter(q=>done.includes(q.id)).reduce((sum,q)=>sum+q.points,0);
+  const progress=Math.round(done.length/questItems.length*100);
+  const badges=[];
+  if(done.length>=1) badges.push('🌱 First steps');
+  if(done.length>=3) badges.push('🧭 Service explorer');
+  if(done.length>=5) badges.push('🔐 Digital citizen');
+  if(done.length===questItems.length) badges.push('🏅 Justice World finisher');
+  return (
+    <section className="jw-questboard" aria-label="Justice World quests and progress">
+      <div className="jw-questboard-head">
+        <div><div className="jw-eyebrow">JUSTICE WORLD · PRACTICAL QUESTS</div><h2>Your progress journey</h2><p>Complete short learning and preparation activities to build confidence using digital justice services.</p></div>
+        <div className="jw-quest-score"><strong>{points}</strong><span>Personal points</span></div>
+      </div>
+      <div className="jw-quest-progress"><span style={{width:progress+'%'}}/></div>
+      <p>{done.length} of {questItems.length} quests completed · {progress}% progress</p>
+      <div className="jw-quest-grid">
+        {questItems.map(q=><article className="jw-quest-card" key={q.id}>
+          <span style={{fontSize:25}}>{q.icon}</span><strong>{q.title}</strong><small>{q.desc}</small>
+          <button type="button" disabled={done.includes(q.id)} onClick={()=>completeQuest(q.id)}>{done.includes(q.id)?'✓ Completed · '+q.points+' pts':'Complete quest · '+q.points+' pts'}</button>
+        </article>)}
+      </div>
+      <div className="jw-quest-badges">{badges.length?badges.map(b=><span key={b}>{b}</span>):<span>Complete a quest to unlock your first badge</span>}</div>
+      <p style={{marginTop:14,fontSize:11}}>Progress is saved only in this browser on this device. Points and badges are personal demonstration features—not official awards, a public leaderboard, case priority, or a reward for submitting a case. Your access to justice is not affected by your score.</p>
+    </section>
+  );
+}
+
+      <JusticeQuestboard userId={session.user.id} />
       <div className="jw-tabbar">
         <button className={'jw-tab '+(tab==='journey'?'active':'')} onClick={()=>setTab('journey')}>🗺️ Justice World</button>
         <button className={'jw-tab '+(tab==='cases'?'active':'')} onClick={()=>setTab('cases')}>📁 My Cases</button>
